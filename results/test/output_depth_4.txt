@@ -1,0 +1,3 @@
+Test simple dataset 
+Pulp execution time for depth 4 : 7.647617340087891 seconds
+{3: {'training_accuracy': 0.69375, 'test_accuracy': 0.7777777777777778, 'time': 2.3239738941192627}, 4: {'training_accuracy': 0.75, 'test_accuracy': 0.8333333333333334, 'time': 2.271026849746704}, 2: {'training_accuracy': 0.5875, 'test_accuracy': 0.6111111111111112, 'time': 7.637155055999756}}
