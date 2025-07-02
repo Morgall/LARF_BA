@@ -1,0 +1,2 @@
+Test simple dataset 
+Pulp execution time for depth 8 : 35.40032148361206 seconds
