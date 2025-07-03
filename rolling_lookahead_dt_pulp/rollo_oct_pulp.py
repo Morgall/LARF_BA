@@ -58,12 +58,24 @@ def run(train: pd.DataFrame,
 
     test_acc = len(result_test.loc[result_test["prediction"] == result_test["y"]]) / \
                len(result_test["y"])
+    
+    result_dict = {} #adding dict to store solutions for every level
+    result_dict['tree'] = {}
+    result_dict['tree'][2] = {}
+    result_dict['tree'][2]['train'] = result_train[['y', 'prediction', 'leaf']]
+    result_dict['tree'][2]['test'] = result_test[['y', 'prediction', 'leaf']]
+
+    result_dict[2] = {
+    "training_accuracy": train_acc,
+    "test_accuracy": test_acc,
+    "time": time.time() - main_model_time
+    }
 
     train = train.drop(["prediction", "leaf"], axis=1)
     test = test.drop(["prediction", "leaf"], axis=1)
 
     if depth > 2:
-        result_dict, result_df_test_data, result_df_training_data = rolling_optimize_pulp(predefined_model=main_model,
+        result_dict = rolling_optimize_pulp(predefined_model=main_model,
                                         train_data=train,
                                         test_data=test,
                                         main_depth=2,
@@ -71,16 +83,9 @@ def run(train: pd.DataFrame,
                                         features=P,
                                         time_limit=time_limit,
                                         to_go_deep_nodes=misclassified_leafs,
+                                        result_dict=result_dict,
                                         criterion=criterion)
-          # add main model
-    result_dict[2] = {
-    "training_accuracy": train_acc,
-    "test_accuracy": test_acc,
-    "time": time.time() - main_model_time
-    }
 
-    if depth > 2:
-        return result_dict, result_df_test_data, result_df_training_data
-    else: 
-        return result_dict, result_test[['y', 'prediction', 'leaf']], result_train[['y', 'prediction', 'leaf']]
+
+    return result_dict
 

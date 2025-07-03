@@ -14,6 +14,7 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                       features: list,
                       time_limit: float,
                       to_go_deep_nodes: list,
+                      result_dict: dict,
                       criterion: str = "gini"
                       ) -> pd.DataFrame:
     """
@@ -36,8 +37,8 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
     df_arr = np.array(train_data)
     leaf_nodes_path = predefined_model["nodes"]["leaf_nodes_path"] # {4: [1, 1], 5: [1, 0], 6: [0, 1], 7: [0, 0]}
     y_idx = 0
-    #predefined_model.pop('model')
-    #predefined_model.pop('params')
+    predefined_model.pop('model')
+    predefined_model.pop('params')
     final_model = copy.deepcopy(predefined_model) #new dict without model and params
     
 
@@ -49,7 +50,7 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
     
     
     new_train_data_dict = {}
-    result_dict = {}
+    #result_dict = {}
 
     
     for level in range(1, target_depth - main_depth + 1): #for each level of the rolling tree, "breadth first search approach"
@@ -58,6 +59,9 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
         iter_time = time.time()
         to_go_deep_nodes_ = {}
         sub_K = {}
+
+        current_depth = main_depth + level
+
         parents_to_optimize = parents_of_nodes_to_branch_on( #gives parent of impure node; e.g. {3: [np.int64(7)]} because node 3 ist parent of node 7 (leaf) that is impure
             go_deep_nodes=to_go_deep_nodes)
         
@@ -167,7 +171,7 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
             final_model["details"]["target_class"].update(
                 main_model["details"]["target_class"])
 
-        ####### hier ist drin wie die train daten im letzten Teilbaum performen; dict in predict_model_pulp)
+        ####### hier ist drin wie die train daten im aktuellen Teilbaum performen; dict in predict_model_pulp)
         
         final_model["depth"] = main_depth + level
         result_training_data = predict_model_pulp(data=train_data,
@@ -175,6 +179,10 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                                 P=features,
                                 pruned_nodes=pruned_nodes)
         #######################
+
+        result_dict['tree'][current_depth] = {}
+        
+        result_dict['tree'][current_depth]['train'] = result_training_data[['y', 'prediction', 'leaf']] #adding dict to save classification for every level
         
 
 
@@ -184,13 +192,15 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                     len(result_training_data["y"])
         #del result_training_data
 
-        ####### hier ist drin wie die test daten im letzten Teilbaum performen; dict in predict_model_pulp)
+        ####### hier ist drin wie die test daten im aktuellen Teilbaum performen; dict in predict_model_pulp)
         result_test_data = predict_model_pulp(data=test_data,
                                model_dict=final_model,
                                P=features,
                                pruned_nodes=pruned_nodes)
         
         ################################################
+
+        result_dict['tree'][current_depth]['test'] = result_test_data[['y', 'prediction', 'leaf']]
         
         prediction_acc = len(
             result_test_data.loc[result_test_data["prediction"]
@@ -203,11 +213,10 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
             f"depth is {main_depth + level}")
         to_go_deep_nodes = to_go_deep_nodes_
 
-        current_depth = main_depth + level
         result_dict[current_depth] = {
             "training_accuracy": train_acc,
             "test_accuracy": prediction_acc,
             "time": time.time() - iter_time
 
         }
-    return result_dict, result_test_data[['y', 'prediction', 'leaf']], result_training_data[['y', 'prediction', 'leaf']]
+    return result_dict
