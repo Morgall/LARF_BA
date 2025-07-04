@@ -1,2 +1,0 @@
-Test adult dataset 
-Pulp execution time for depth 8 : 1172.1069655418396 seconds

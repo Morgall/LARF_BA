@@ -1,0 +1,9 @@
+Test adult dataset 
+2: {'training_accuracy': 0.8193544424311293, 'test_accuracy': 0.8219396842945765, 'time': 171.91448783874512}
+3: {'training_accuracy': 0.8215349651423483, 'test_accuracy': 0.8247650635710337, 'time': 174.23762464523315}
+4: {'training_accuracy': 0.824575412303062, 'test_accuracy': 0.8259934893434064, 'time': 168.7406747341156}
+5: {'training_accuracy': 0.8282300912134148, 'test_accuracy': 0.8302315582580923, 'time': 158.07800889015198}
+6: {'training_accuracy': 0.8334510610853475, 'test_accuracy': 0.8313371414532277, 'time': 146.61753630638123}
+7: {'training_accuracy': 0.8378735296827493, 'test_accuracy': 0.8325041459369817, 'time': 152.65479850769043}
+8: {'training_accuracy': 0.843770154479285, 'test_accuracy': 0.8311528775873718, 'time': 160.2932095527649}
+Pulp execution time for depth 8 : 1132.5926575660706 seconds

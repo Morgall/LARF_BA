@@ -1,9 +1,0 @@
-Test simple dataset 
-2: {'training_accuracy': 0.5875, 'test_accuracy': 0.6111111111111112, 'time': 2.365455389022827}
-3: {'training_accuracy': 0.69375, 'test_accuracy': 0.7777777777777778, 'time': 2.3712589740753174}
-4: {'training_accuracy': 0.75, 'test_accuracy': 0.8333333333333334, 'time': 2.2276196479797363}
-5: {'training_accuracy': 0.8375, 'test_accuracy': 0.8888888888888888, 'time': 3.540839433670044}
-6: {'training_accuracy': 0.9, 'test_accuracy': 0.9444444444444444, 'time': 2.120392084121704}
-7: {'training_accuracy': 0.94375, 'test_accuracy': 0.9444444444444444, 'time': 2.102970600128174}
-8: {'training_accuracy': 0.96875, 'test_accuracy': 0.9444444444444444, 'time': 3.4266068935394287}
-Pulp execution time for depth 8 : 18.168501615524292 seconds
