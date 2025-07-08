@@ -17,6 +17,7 @@ def generate_model_pulp(
         log_to_console: bool = False,
         big_m: int = 99,
         criterion: str = "gini",
+        amount_cores = 1
 ):
     """
 
@@ -54,7 +55,8 @@ def generate_model_pulp(
         coef_dict = calculate_gini(data=data,
                                    P=P,
                                    K=K,
-                                   nodes=nodes)
+                                   nodes=nodes,
+                                   amount_cores=amount_cores)
         
     elif criterion == "misclassification":
         logging.info("Calculating misclassification..")

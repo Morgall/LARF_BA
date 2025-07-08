@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 from typing import Union, List
 
+from multiprocessing import Pool, cpu_count
+
 
 def get_child(current_depth: int, target_depth: int, child_node: int) -> int:
     """
@@ -262,8 +264,39 @@ def gini_index(arr: np.array,
         sum_ = (len(arr) / instance_size) * sum_
     return sum_
 
+def gini_for_leaf(args):
+    leaf_, df_arr, n, P, K, nodes = args
+    temp = dict()
+    first_var = nodes["leaf_nodes_path"][leaf_][0]
+    second_var = nodes["leaf_nodes_path"][leaf_][1]
+    for feature_i in P:
+        arr = df_arr[np.where((df_arr[:, feature_i] == first_var))]
+        for feature_j in P:
+            arr_2 = arr[np.where(arr[:, feature_j] == second_var)]
+            if len(arr_2) > 0:
+                temp[feature_i, feature_j] = gini_index(
+                    arr=arr_2, instance_size=n, K=K, weighted=True
+                )
+    return (leaf_, temp)
 
-def calculate_gini(data: pd.DataFrame,
+
+
+def calculate_gini(data: pd.DataFrame, P: list, K: list, nodes: dict, amount_cores = 1) -> dict:
+    df_arr = np.array(data)
+    n = len(data)
+    # Prepare arguments for each process
+    args = [
+        (leaf_, df_arr, n, P, K, nodes)
+        for leaf_ in nodes["leaf_nodes"]
+    ]
+    with Pool(processes=amount_cores) as pool:
+        results = pool.map(gini_for_leaf, args)
+    # Combine results into a dictionary
+    gini_dict = {leaf_: temp for leaf_, temp in results}
+    return gini_dict
+
+
+def calculate_gini_old(data: pd.DataFrame,
                    P: list,
                    K: list,
                    nodes: dict) -> dict:
