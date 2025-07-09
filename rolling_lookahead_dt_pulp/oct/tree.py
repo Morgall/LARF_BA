@@ -264,6 +264,7 @@ def gini_index(arr: np.array,
         sum_ = (len(arr) / instance_size) * sum_
     return sum_
 
+#########
 def gini_for_leaf(args):
     leaf_, df_arr, n, P, K, nodes = args
     temp = dict()
@@ -280,8 +281,8 @@ def gini_for_leaf(args):
     return (leaf_, temp)
 
 
-
-def calculate_gini(data: pd.DataFrame, P: list, K: list, nodes: dict, amount_cores = 1) -> dict:
+# multicore gini (currently not used)
+def calculate_gini_multi(data: pd.DataFrame, P: list, K: list, nodes: dict, amount_cores = 1) -> dict:
     df_arr = np.array(data)
     n = len(data)
     # Prepare arguments for each process
@@ -294,7 +295,7 @@ def calculate_gini(data: pd.DataFrame, P: list, K: list, nodes: dict, amount_cor
     # Combine results into a dictionary
     gini_dict = {leaf_: temp for leaf_, temp in results}
     return gini_dict
-
+###################
 
 def calculate_gini_old(data: pd.DataFrame,
                    P: list,
@@ -302,25 +303,25 @@ def calculate_gini_old(data: pd.DataFrame,
                    nodes: dict) -> dict:
     """
 
-    :param data:
-    :param P:
-    :param K:
-    :param nodes:
+    :param data: pd.DataFrame — The dataset
+    :param P: list Indices of features to consider
+    :param K: lsit Unique class labels
+    :param nodes: dict — Contains: "leaf_nodes": list of leaf node identifiers. leaf_nodes_path": dict mapping each leaf node to a path (list of values for features).
     :return:
     """
     df_arr = np.array(data)
-    n = len(data)
+    n = len(data) # total number of instances.
     gini_dict = dict()
     for leaf_ in nodes["leaf_nodes"]:
-        temp = dict()
-        first_var = nodes["leaf_nodes_path"][leaf_][0]
-        second_var = nodes["leaf_nodes_path"][leaf_][1]
+        temp = dict() # store Gini values for this leaf
+        first_var = nodes["leaf_nodes_path"][leaf_][0] #{'leaf_nodes': [4, 5, 6, 7], 'leaf_nodes_path': {4: [1, 1], 5: [1, 0], 6: [0, 1], 7: [0, 0]}}
+        second_var = nodes["leaf_nodes_path"][leaf_][1] #first_var, second_var — the first two values in the path to this leaf (used as feature values for filtering)
         for feature_i in P:
-            arr = df_arr[np.where((df_arr[:, feature_i] == first_var))]
+            arr = df_arr[np.where((df_arr[:, feature_i] == first_var))] #Selects rows where feature feature_i equals first_var.
 
             for feature_j in P:
-                arr_2 = arr[np.where(arr[:, feature_j] == second_var)]
-                if len(arr_2) > 0:
+                arr_2 = arr[np.where(arr[:, feature_j] == second_var)] #Further filters to rows where feature feature_j equals second_var
+                if len(arr_2) > 0: #Calculate Gini index for arr_2 (so for all rows matching (1, 0; having/not having feature i) the decision variables)
                     temp[feature_i, feature_j] = gini_index(arr=arr_2,
                                                             instance_size=n,
                                                             K=K,
@@ -329,6 +330,42 @@ def calculate_gini_old(data: pd.DataFrame,
         del temp
         del arr
 
+    return gini_dict
+
+# gini for bigger datasets:
+def gini_index_fast(y):
+    """Vectorized Gini calculation for a 1D array of labels."""
+    _, counts = np.unique(y, return_counts=True) #returns the unique labels in y and how many times each appears, counts is an array of the number of occurrences for each unique label
+    probs = counts / len(y)
+    return 1 - np.sum(probs ** 2)
+    #probs = counts / counts.sum()
+    #if counts.sum() == len(y):
+        #return 1 - np.sum(probs ** 2)
+
+def calculate_gini_fast(data: pd.DataFrame, P: list, K: list, nodes: dict) -> dict:
+    """
+    :param data: pd.DataFrame — The dataset
+    :param P: list of Indices of features to consider
+    :param K: list Unique class labels
+    :param nodes: dict — Contains: "leaf_nodes": list of leaf node identifiers. leaf_nodes_path": dict mapping each leaf node to a path (list of values for features).
+    :return:
+    """
+    gini_dict = dict()
+    n = len(data) #Total number of rows in the dataset
+    for leaf_ in nodes["leaf_nodes"]:
+        temp = dict()
+        #These are the feature values that define the path to this leaf (e.g., in a decision tree, the values that must be matched to reach this leaf):
+        first_var = nodes["leaf_nodes_path"][leaf_][0] #{'leaf_nodes': [4, 5, 6, 7], 'leaf_nodes_path': {4: [1, 1], 5: [1, 0], 6: [0, 1], 7: [0, 0]}}
+        second_var = nodes["leaf_nodes_path"][leaf_][1] #first_var, second_var — the first two values in the path to this leaf (used as feature values for filtering)
+        for feature_i in P:
+            arr = data[data.iloc[:, feature_i] == first_var] # filters to rows where feature_i equals first_var
+            for feature_j in P:
+                arr_2 = arr[arr.iloc[:, feature_j] == second_var] #Further filters arr to rows where feature_j equals second_var
+                if not arr_2.empty:
+                    gini = gini_index_fast(arr_2.iloc[:, 0].values) #Calculates the Gini impurity of the labels in the first column (assumed to be the label column).
+                    weighted_gini = (len(arr_2) / n) * gini
+                    temp[(feature_i, feature_j)] = weighted_gini
+        gini_dict[leaf_] = temp
     return gini_dict
 
 

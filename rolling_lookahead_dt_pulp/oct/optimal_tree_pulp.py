@@ -3,8 +3,7 @@ import numpy as np
 from pulp import *
 import time
 
-from rolling_lookahead_dt_pulp.oct.tree import generate_nodes, calculate_gini, \
-    calculate_misclassification
+from rolling_lookahead_dt_pulp.oct.tree import generate_nodes, calculate_gini_old, calculate_gini_fast, calculate_misclassification
 
 
 def generate_model_pulp(
@@ -17,7 +16,7 @@ def generate_model_pulp(
         log_to_console: bool = False,
         big_m: int = 99,
         criterion: str = "gini",
-        amount_cores = 1
+        big_dataset = False
 ):
     """
 
@@ -52,11 +51,17 @@ def generate_model_pulp(
 
     if criterion == "gini":
         logging.info("Calculating gini..")
-        coef_dict = calculate_gini(data=data,
-                                   P=P,
-                                   K=K,
-                                   nodes=nodes,
-                                   amount_cores=amount_cores)
+        if big_dataset == False:
+            coef_dict = calculate_gini_old(data=data,
+                                    P=P,
+                                    K=K,
+                                    nodes=nodes)
+        else:
+            coef_dict = calculate_gini_fast(data=data,
+                                    P=P,
+                                    K=K,
+                                    nodes=nodes)
+
         
     elif criterion == "misclassification":
         logging.info("Calculating misclassification..")

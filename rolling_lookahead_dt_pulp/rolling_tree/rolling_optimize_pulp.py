@@ -16,7 +16,7 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                       to_go_deep_nodes: list,
                       result_dict: dict,
                       criterion: str = "gini",
-                      amount_cores=1
+                      big_dataset = False
                       ) -> pd.DataFrame:
     """
 
@@ -105,7 +105,7 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                                         time_limit=time_limit,
                                         log_to_console=False,
                                         criterion=criterion,
-                                        amount_cores=amount_cores)
+                                        big_dataset=big_dataset)
             main_model = train_model_pulp(model_dict=main_model,
                                      data=new_train_data_dict[node_],
                                      P=features)

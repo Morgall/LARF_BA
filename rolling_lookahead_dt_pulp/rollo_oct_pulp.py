@@ -15,7 +15,7 @@ def run(train: pd.DataFrame,
         criterion: str = "gini",
         time_limit: int = 1800,
         big_m: int = 99,
-        amount_cores = 1):
+        big_dataset = False):
     """
 
     :param target_label:
@@ -43,7 +43,7 @@ def run(train: pd.DataFrame,
     K = sorted(list(set(df.y)))
     main_model_time = time.time()
     # generate model
-    main_model = generate_model_pulp(P=P, K=K, data=train, y_idx=0, big_m=big_m, criterion=criterion, amount_cores = amount_cores)
+    main_model = generate_model_pulp(P=P, K=K, data=train, y_idx=0, big_m=big_m, criterion=criterion, big_dataset=big_dataset)
     # train model
     main_model = train_model_pulp(model_dict=main_model, data=train, P=P)
     # predict model
@@ -86,7 +86,7 @@ def run(train: pd.DataFrame,
                                         to_go_deep_nodes=misclassified_leafs,
                                         result_dict=result_dict,
                                         criterion=criterion,
-                                        amount_cores=amount_cores)
+                                        big_dataset=big_dataset)
 
 
     return result_dict
