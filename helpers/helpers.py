@@ -17,19 +17,21 @@ def train_validation_test_split(data: pd.DataFrame,
     test_df = data.iloc[perm[validate_end:]]
     return train_df, validation_df, test_df
 
-def preprocess_numerical(data: pd.DataFrame) -> pd.DataFrame:
-    binary_cols = [cname for cname in data.columns if data[cname].nunique() == 2] # Find Columns with Exactly 2 Unique Values; list of column names that have exactly two unique values
+def preprocess_numerical(data: pd.DataFrame, target_label='y') -> pd.DataFrame:
+    excluded_cols = [cname for cname in data.columns if data[cname].nunique() == 2] # list; excluded cols are those with target vars (not to be categorized) and cols with binary data
+    excluded_cols = list(set(excluded_cols + [target_label])) #adds target col to excluded cols and handles case that target col is binary
     int_cols_non_binary = [col for col in data.select_dtypes(include=['int']).columns 
-                      if col not in binary_cols]
-    for col in int_cols_non_binary:
+                      if col not in excluded_cols]
+    float_cols_non_binary = [col for col in data.select_dtypes(include=['float']).columns 
+                      if col not in excluded_cols]
+    numeric_cols_non_binary = int_cols_non_binary + float_cols_non_binary
+    for col in numeric_cols_non_binary:
         unique_vals = data[col].nunique()
         if unique_vals < 7:
             data[col] = data[col].astype('category')
         else:
-            # Discretize into 4 equal-sized groups (adjust as needed)
-            data[col] = pd.cut(data[col], bins=4, labels=False, duplicates='drop') #pd.cut does work for quantiles for us
-            # Duplicates handling: The duplicates='drop' argument means that if the bin edges are not unique (which can happen if your data is very sparse or has repeated values), duplicate bin edges will be dropped, resulting in fewer bins than specified if necessary
-            # Result: Each value in col is replaced by the bin number (as an integer) corresponding to its interval, or possibly fewer bins than 4 if duplicates are dropped.
+            #data[col] = pd.cut(data[col], bins=4, labels=False, duplicates='drop') #pd.cut does work for quantiles for us
+            data[col] = pd.qcut(data[col], q=5, labels=False, duplicates='drop')
     return data
 
 
