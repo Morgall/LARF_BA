@@ -43,7 +43,7 @@ def run(train: pd.DataFrame,
     K = sorted(list(set(df.y)))
     main_model_time = time.time()
     # generate model
-    main_model = generate_model_pulp(P=P, K=K, data=train, y_idx=0, big_m=big_m, criterion=criterion, big_dataset=big_dataset)
+    main_model = generate_model_pulp(P=P, K=K, data=train, y_idx=0, big_m=big_m, criterion=criterion)
     # train model
     main_model = train_model_pulp(model_dict=main_model, data=train, P=P)
     # predict model

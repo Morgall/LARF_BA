@@ -20,6 +20,7 @@ def train_validation_test_split(data: pd.DataFrame,
 def preprocess_numerical(data: pd.DataFrame, target_label='y') -> pd.DataFrame:
     excluded_cols = [cname for cname in data.columns if data[cname].nunique() == 2] # list; excluded cols are those with target vars (not to be categorized) and cols with binary data
     excluded_cols = list(set(excluded_cols + [target_label])) #adds target col to excluded cols and handles case that target col is binary
+    #target label cols are made categorical in make_data_binary() so its excluded here, otherwise it leads to errors
     int_cols_non_binary = [col for col in data.select_dtypes(include=['int']).columns 
                       if col not in excluded_cols]
     float_cols_non_binary = [col for col in data.select_dtypes(include=['float']).columns 
