@@ -15,8 +15,7 @@ def generate_model_pulp(
         gap_limit: float = None,
         log_to_console: bool = False,
         big_m: int = 99,
-        criterion: str = "gini",
-        big_dataset = False
+        criterion: str = "gini"
 ):
     """
 
@@ -51,13 +50,7 @@ def generate_model_pulp(
 
     if criterion == "gini":
         logging.info("Calculating gini..")
-        if big_dataset == False:
-            coef_dict = calculate_gini_old(data=data,
-                                    P=P,
-                                    K=K,
-                                    nodes=nodes)
-        else:
-            coef_dict = calculate_gini_fast(data=data,
+        coef_dict = calculate_gini_old(data=data,
                                     P=P,
                                     K=K,
                                     nodes=nodes)

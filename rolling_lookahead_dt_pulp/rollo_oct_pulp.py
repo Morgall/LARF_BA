@@ -85,8 +85,7 @@ def run(train: pd.DataFrame,
                                         time_limit=time_limit,
                                         to_go_deep_nodes=misclassified_leafs,
                                         result_dict=result_dict,
-                                        criterion=criterion,
-                                        big_dataset=big_dataset)
+                                        criterion=criterion)
 
 
     return result_dict

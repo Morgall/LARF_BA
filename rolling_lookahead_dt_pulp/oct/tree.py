@@ -332,7 +332,7 @@ def calculate_gini_old(data: pd.DataFrame,
 
     return gini_dict
 
-# gini for bigger datasets:
+# gini for bigger datasets (slower on real data; not used):
 def gini_index_fast(y):
     """Vectorized Gini calculation for a 1D array of labels."""
     _, counts = np.unique(y, return_counts=True) #returns the unique labels in y and how many times each appears, counts is an array of the number of occurrences for each unique label
