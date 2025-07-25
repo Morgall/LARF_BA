@@ -1,0 +1,16 @@
+2: {'training_accuracy': 0.7638031550068587, 'test_accuracy': 0.7600308641975309, 'time': 4.4577248096466064}
+3: {'training_accuracy': 0.8307613168724279, 'test_accuracy': 0.8302469135802469, 'time': 6.6245362758636475}
+4: {'training_accuracy': 0.8625685871056241, 'test_accuracy': 0.8510802469135802, 'time': 6.7367284297943115}
+5: {'training_accuracy': 0.8844307270233196, 'test_accuracy': 0.8688271604938271, 'time': 7.173190116882324}
+6: {'training_accuracy': 0.9068930041152263, 'test_accuracy': 0.9012345679012346, 'time': 7.566773176193237}
+7: {'training_accuracy': 0.9222393689986282, 'test_accuracy': 0.9189814814814815, 'time': 7.21691107749939}
+8: {'training_accuracy': 0.9474451303155007, 'test_accuracy': 0.9375, 'time': 7.571229457855225}
+Pulp execution time for depth 8 : 47.35234069824219 seconds
+2: {'training_accuracy': 0.7638031550068587, 'test_accuracy': 0.7600308641975309, 'time': 4.7355873584747314}
+3: {'training_accuracy': 0.8307613168724279, 'test_accuracy': 0.8302469135802469, 'time': 7.649810552597046}
+4: {'training_accuracy': 0.8625685871056241, 'test_accuracy': 0.8510802469135802, 'time': 7.04842472076416}
+5: {'training_accuracy': 0.8844307270233196, 'test_accuracy': 0.8688271604938271, 'time': 6.967724084854126}
+6: {'training_accuracy': 0.9068930041152263, 'test_accuracy': 0.9012345679012346, 'time': 7.655595779418945}
+7: {'training_accuracy': 0.9222393689986282, 'test_accuracy': 0.9189814814814815, 'time': 7.918202877044678}
+8: {'training_accuracy': 0.9474451303155007, 'test_accuracy': 0.9375, 'time': 8.28559160232544}
+Pulp execution time for depth 8 : 50.26597738265991 seconds
