@@ -35,13 +35,13 @@ data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
 to_do_dict['test'] = data_test
 
 data_breast_cancer = pd.read_csv("datasets/breast+cancer+wisconsin+diagnostic/wdbc_bin.csv")
-#to_do_dict['breast+cancer+wisconsin+diagnostic'] = data_breast_cancer
+to_do_dict['breast+cancer+wisconsin+diagnostic'] = data_breast_cancer
 
 data_car_eval = pd.read_csv("datasets/car_evaluation/car_bin.csv")
 to_do_dict['car_evaluation'] = data_car_eval
 
 data_mushroom = pd.read_csv("datasets/mushroom/agaricus_lepiota_bin.csv")
-#to_do_dict['mushroom'] = data_mushroom
+to_do_dict['mushroom'] = data_mushroom
 
 data_nursery = pd.read_csv("datasets/nursery/nursery_bin.csv")
 to_do_dict['nursery'] = data_nursery
@@ -56,7 +56,7 @@ data_wine = pd.read_csv("datasets/wine/wine_bin.csv")
 to_do_dict['wine'] = data_wine
 
 data_adult = pd.read_csv("datasets/adult/stacked.csv")
-#to_do_dict['adult'] = data_adult
+to_do_dict['adult'] = data_adult
 
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values
