@@ -97,7 +97,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         os.makedirs(f'{dir_path}/pulp/fold{i}', exist_ok=True)
 
         for depth in range(2,depth_rolling_tree+1):
-            with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'a') as f:
+            with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'w') as f:
                 f.write(str(depth) + ': ' + str(result_dict_pulp[depth]) + "\n")
 
         with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'a') as f:
