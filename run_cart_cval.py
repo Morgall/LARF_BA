@@ -76,6 +76,9 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         targets_train = targets.iloc[train_idx]
         targets_test = targets.iloc[test_idx]
 
+        with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'w') as f:
+            pass  # This just creates/truncates the file
+
         for depth in range(2, depth_tree+1):
             # Initialize the Decision Tree Classifier
             clf = DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=depth, random_state=1)
@@ -98,7 +101,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             # Create the directory if it doesn't exist
             os.makedirs(f'{dir_path}/cart/fold{i}', exist_ok=True)
 
-            with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'w') as f:
+            with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'a') as f:
                 f.write(f"CART execution time for depth {depth} : {end_time_cart - start_time_cart} seconds\n")
 
             with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_test.csv', 'w') as f:
