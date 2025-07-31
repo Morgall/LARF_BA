@@ -50,6 +50,8 @@ def calc_acc_sens_spec_prec(tp, fp, fn, tn):
     #number_datapoints = tp+tn+fp+fn
     sensitivity = tp/(tp+fn) #also called recall, True Positive Rate
     specificity = tn/(tn+fp)
+    #if tp+fp == 0:
+        #print('NaN')
     precision = tp/(tp+fp)
     #accuracy = (tp+tn)/number_datapoints
     #return accuracy, sensitivity, specificity,precision
@@ -113,6 +115,9 @@ def solutions_all_depths_all_folds_multiclass(dataset_name, list_target_vars, ma
 
             cm_test = confusion_matrix(y_true_test, y_predict_test) #(true labels, predicted labels)
             cm_train = confusion_matrix(y_true_train, y_predict_train)
+            
+            target_vars_in_mc = np.arange(1, cm_test.shape[0] + 1)
+            #print(cm_test.shape)
 
             result_dict[depth]['test']['accuracy'] += accuracy_score(y_true_test, y_predict_test) / folds_available
             result_dict[depth]['train']['accuracy'] += accuracy_score(y_true_train, y_predict_train) / folds_available
@@ -123,7 +128,9 @@ def solutions_all_depths_all_folds_multiclass(dataset_name, list_target_vars, ma
             mcc_scores_test.append(mcc_test)
             mcc_scores_train.append(mcc_train)
             
-            for j,class_idx in enumerate(list_target_vars): #every target class possible
+            #for j,class_idx in enumerate(list_target_vars): #every target class possible # changed because it does not account for case, that target vars are missing from fold 
+
+            for j,class_idx in enumerate(target_vars_in_mc): #every target class possible
 
 
                 tp_test, fp_test, fn_test, tn_test = get_class_confusion_values(cm_test, class_idx-1) #-1 because conusion matrix cm starts indices with 0
