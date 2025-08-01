@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, precision_score, recall_score, classification_report, matthews_corrcoef
+from sklearn.metrics import accuracy_score, precision_score, recall_score, classification_report, matthews_corrcoef, roc_auc_score
 
 # Go up one directory to get to master/
 project_root = str(Path.cwd().parent)
@@ -89,6 +89,9 @@ def solutions_all_depths_all_folds_multiclass(dataset_name, list_target_vars, ma
         mcc_scores_test = []
         mcc_scores_train = []
 
+        #roc_auc_list_test = []
+        #roc_auc_list_train = []
+
         for i,class_idx in enumerate(list_target_vars): #initialize per depth
                 result_dict[depth]['test'][class_idx] = dict()
                 result_dict[depth]['train'][class_idx] = dict()
@@ -127,6 +130,12 @@ def solutions_all_depths_all_folds_multiclass(dataset_name, list_target_vars, ma
 
             mcc_scores_test.append(mcc_test)
             mcc_scores_train.append(mcc_train)
+
+            #roc_auc_test = roc_auc_score(y_true_test, y_predict_test, multi_class='ovr', average='macro')
+            #roc_auc_train = roc_auc_score(y_true_train, y_predict_train, multi_class='ovr', average='macro')
+
+            #roc_auc_list_test.append(roc_auc_test)
+            #roc_auc_list_train.append(roc_auc_train)
             
             #for j,class_idx in enumerate(list_target_vars): #every target class possible # changed because it does not account for case, that target vars are missing from fold 
 
@@ -154,6 +163,12 @@ def solutions_all_depths_all_folds_multiclass(dataset_name, list_target_vars, ma
 
         result_dict[depth]['test']['mcc'] = mean_mcc_test
         result_dict[depth]['train']['mcc'] = mean_mcc_train
+
+        #mean_roc_auc_test = np.mean(roc_auc_list_test)
+        #mean_roc_auc_train = np.mean(roc_auc_list_train)
+
+        #result_dict[depth]['test']['roc_auc'] = mean_roc_auc_test
+        #result_dict[depth]['train']['roc_auc'] = mean_roc_auc_train
 
         #std_mcc_test = np.std(mcc_scores_test)
         #std_mcc_train = np.std(mcc_scores_train)
@@ -204,8 +219,19 @@ def get_mcc_every_depth(result_dict, depth): #Matthews Correlation Coefficient
         df.at[f'depth{j}', 'train'] = result_dict[j]['train']['mcc']
     return df
 
+def get_roc_auc_every_depth(result_dict, depth): #Matthews Correlation Coefficient
+    rows_depths = []
+    cols = ['test','train']
+    for i in range(2,depth+1):
+        rows_depths.append(f'depth{i}')
+    df = pd.DataFrame([], index=rows_depths, columns=cols)
+    for j in range(2,depth+1):
+        df.at[f'depth{j}', 'test'] = result_dict[j]['test']['roc_auc']
+        df.at[f'depth{j}', 'train'] = result_dict[j]['train']['roc_auc']
+    return df
+
 #for all metrics which consider all target vars in a single value
-#for acc and mcc
+#for acc and mcc, auroc
 def plot_on_ax(ax, x, categories, bar_width, dataset_var_rollOCT, dataset_var_cart, dataset_name, metric_name, metric_short, train=False):
     ax.bar(x - bar_width, dataset_var_rollOCT, width=bar_width, label='rollOCT')
     ax.bar(x, dataset_var_cart, width=bar_width, label='CART')
