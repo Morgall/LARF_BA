@@ -91,6 +91,9 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         targets_train = targets.iloc[train_idx]
         targets_test = targets.iloc[test_idx]
 
+        # Create the directory if it doesn't exist
+        os.makedirs(f'{dir_path}/cart/fold{i}', exist_ok=True)
+
         with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'w') as f:
             pass  # This just creates/truncates the file
 
@@ -114,7 +117,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             end_time_cart = time.time()
 
             # Create the directory if it doesn't exist
-            os.makedirs(f'{dir_path}/cart/fold{i}', exist_ok=True)
+            #os.makedirs(f'{dir_path}/cart/fold{i}', exist_ok=True)
 
             with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'a') as f:
                 f.write(f"CART execution time for depth {depth} : {end_time_cart - start_time_cart} seconds\n")
