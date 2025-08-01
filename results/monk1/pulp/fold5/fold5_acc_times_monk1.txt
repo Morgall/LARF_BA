@@ -1,0 +1,2 @@
+8: {'training_accuracy': 1.0, 'test_accuracy': 1.0, 'time': 0.17414402961730957}
+Pulp execution time for depth 8 : 1.7532927989959717 seconds
