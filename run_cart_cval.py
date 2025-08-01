@@ -54,20 +54,20 @@ to_do_dict = dict() # add datasets to be run into this dict and choose key as da
 #data_adult = pd.read_csv("datasets/adult/stacked.csv")
 #to_do_dict['adult'] = data_adult
 
-data_banknote = pd.read_csv("datasets/banknote+authentication/banknote_bin.csv")
-to_do_dict['banknote+authentication'] = data_banknote
+#data_banknote = pd.read_csv("datasets/banknote+authentication/banknote_bin.csv")
+#to_do_dict['banknote+authentication'] = data_banknote
 
-data_chess = pd.read_csv("datasets/chess+king+rook+vs+king+pawn/kr-vs-kp_bin.csv")
-to_do_dict['chess+king+rook+vs+king+pawn'] = data_chess
+#data_chess = pd.read_csv("datasets/chess+king+rook+vs+king+pawn/kr-vs-kp_bin.csv")
+#to_do_dict['chess+king+rook+vs+king+pawn'] = data_chess
 
-data_monk1 = pd.read_csv("datasets/monk1/monk1_bin.csv")
-to_do_dict['monk1'] = data_monk1
+#data_monk1 = pd.read_csv("datasets/monk1/monk1_bin.csv")
+#to_do_dict['monk1'] = data_monk1
 
-data_monk2 = pd.read_csv("datasets/monk2/monk2_bin.csv")
-to_do_dict['monk2'] = data_monk2
+#data_monk2 = pd.read_csv("datasets/monk2/monk2_bin.csv")
+#to_do_dict['monk2'] = data_monk2
 
-data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
-to_do_dict['monk3'] = data_monk3
+#data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
+#to_do_dict['monk3'] = data_monk3
 
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values

@@ -87,6 +87,9 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
     for train_idx, test_idx in skf.split(features, targets): #gives row indices
         
+        with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'w') as f:
+            pass  # This just creates/truncates the file
+
         print(dataset_name)
         print(i)
         
@@ -112,7 +115,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         os.makedirs(f'{dir_path}/pulp/fold{i}', exist_ok=True)
 
         for depth in range(2,depth_rolling_tree+1):
-            with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'w') as f:
+            with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'a') as f:
                 f.write(str(depth) + ': ' + str(result_dict_pulp[depth]) + "\n")
 
         with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'a') as f:
