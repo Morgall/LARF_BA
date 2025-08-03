@@ -3,6 +3,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import StratifiedKFold
 import time
 import os
+from sklearn.metrics import roc_auc_score
 
 """
 name_dataset_dict = {
@@ -27,47 +28,47 @@ folds_cross_val = 10
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
 
-#data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
-#to_do_dict['test'] = data_test
+data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
+to_do_dict['test'] = data_test
 
-#data_breast_cancer = pd.read_csv("datasets/breast+cancer+wisconsin+diagnostic/wdbc_bin.csv")
-#to_do_dict['breast+cancer+wisconsin+diagnostic'] = data_breast_cancer
+data_breast_cancer = pd.read_csv("datasets/breast+cancer+wisconsin+diagnostic/wdbc_bin.csv")
+to_do_dict['breast+cancer+wisconsin+diagnostic'] = data_breast_cancer
 
-#data_car_eval = pd.read_csv("datasets/car_evaluation/car_bin.csv")
-#to_do_dict['car_evaluation'] = data_car_eval
+data_car_eval = pd.read_csv("datasets/car_evaluation/car_bin.csv")
+to_do_dict['car_evaluation'] = data_car_eval
 
-#data_mushroom = pd.read_csv("datasets/mushroom/agaricus_lepiota_bin.csv")
-#to_do_dict['mushroom'] = data_mushroom
+data_mushroom = pd.read_csv("datasets/mushroom/agaricus_lepiota_bin.csv")
+to_do_dict['mushroom'] = data_mushroom
 
-#data_nursery = pd.read_csv("datasets/nursery/nursery_bin.csv")
-#to_do_dict['nursery'] = data_nursery
+data_nursery = pd.read_csv("datasets/nursery/nursery_bin.csv")
+to_do_dict['nursery'] = data_nursery
 
-#data_seismic = pd.read_csv("datasets/seismic/seismic_bin.csv")
-#to_do_dict['seismic'] = data_seismic
+data_seismic = pd.read_csv("datasets/seismic/seismic_bin.csv")
+to_do_dict['seismic'] = data_seismic
 
-#data_spambase = pd.read_csv("datasets/spambase/spambase_bin.csv")
-#to_do_dict['spambase'] = data_spambase
+data_spambase = pd.read_csv("datasets/spambase/spambase_bin.csv")
+to_do_dict['spambase'] = data_spambase
 
-#data_wine = pd.read_csv("datasets/wine/wine_bin.csv")
-#to_do_dict['wine'] = data_wine
+data_wine = pd.read_csv("datasets/wine/wine_bin.csv")
+to_do_dict['wine'] = data_wine
 
-#data_adult = pd.read_csv("datasets/adult/stacked.csv")
-#to_do_dict['adult'] = data_adult
+data_adult = pd.read_csv("datasets/adult/stacked.csv")
+to_do_dict['adult'] = data_adult
 
-#data_banknote = pd.read_csv("datasets/banknote+authentication/banknote_bin.csv")
-#to_do_dict['banknote+authentication'] = data_banknote
+data_banknote = pd.read_csv("datasets/banknote+authentication/banknote_bin.csv")
+to_do_dict['banknote+authentication'] = data_banknote
 
-#data_chess = pd.read_csv("datasets/chess+king+rook+vs+king+pawn/kr-vs-kp_bin.csv")
-#to_do_dict['chess+king+rook+vs+king+pawn'] = data_chess
+data_chess = pd.read_csv("datasets/chess+king+rook+vs+king+pawn/kr-vs-kp_bin.csv")
+to_do_dict['chess+king+rook+vs+king+pawn'] = data_chess
 
-#data_monk1 = pd.read_csv("datasets/monk1/monk1_bin.csv")
-#to_do_dict['monk1'] = data_monk1
+data_monk1 = pd.read_csv("datasets/monk1/monk1_bin.csv")
+to_do_dict['monk1'] = data_monk1
 
-#data_monk2 = pd.read_csv("datasets/monk2/monk2_bin.csv")
-#to_do_dict['monk2'] = data_monk2
+data_monk2 = pd.read_csv("datasets/monk2/monk2_bin.csv")
+to_do_dict['monk2'] = data_monk2
 
-#data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
-#to_do_dict['monk3'] = data_monk3
+data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
+to_do_dict['monk3'] = data_monk3
 
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values
@@ -103,6 +104,11 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             start_time_cart = time.time()
             clf.fit(features_train, targets_train)
 
+            y_proba_test = clf.predict_proba(features_test)
+            y_proba_test = pd.DataFrame(y_proba_test)
+            y_proba_train = clf.predict_proba(features_train)
+            y_proba_train = pd.DataFrame(y_proba_train)
+
             y_pred_test = clf.predict(features_test)
             y_pred_train = clf.predict(features_train)
 
@@ -116,17 +122,23 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
             end_time_cart = time.time()
 
-            # Create the directory if it doesn't exist
-            #os.makedirs(f'{dir_path}/cart/fold{i}', exist_ok=True)
+            #Create the directory if it doesn't exist
+            os.makedirs(f'{dir_path}/cart/fold{i}/auroc_probs', exist_ok=True)
 
-            with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'a') as f:
-                f.write(f"CART execution time for depth {depth} : {end_time_cart - start_time_cart} seconds\n")
+            with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_test.txt', 'a') as f:
+                f.write(y_proba_test.to_csv())
+            
+            with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_train.txt', 'a') as f:
+                f.write(y_proba_train.to_csv())
 
-            with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_test.csv', 'w') as f:
-                f.write(df_test.to_csv())
+            #with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'a') as f:
+                #f.write(f"CART execution time for depth {depth} : {end_time_cart - start_time_cart} seconds\n")
+
+            #with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_test.csv', 'w') as f:
+                #f.write(df_test.to_csv())
                 
-            with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_train.csv', 'w') as f:
-                f.write(df_train.to_csv())
+            #with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_train.csv', 'w') as f:
+                #f.write(df_train.to_csv())
         
         i+=1
 
