@@ -106,8 +106,11 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
             y_proba_test = clf.predict_proba(features_test)
             y_proba_test = pd.DataFrame(y_proba_test)
+            y_proba_test.columns = clf.classes_
+            print(y_proba_test)
             y_proba_train = clf.predict_proba(features_train)
             y_proba_train = pd.DataFrame(y_proba_train)
+            y_proba_train.columns = clf.classes_
 
             y_pred_test = clf.predict(features_test)
             y_pred_train = clf.predict(features_train)
@@ -125,10 +128,10 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             #Create the directory if it doesn't exist
             os.makedirs(f'{dir_path}/cart/fold{i}/auroc_probs', exist_ok=True)
 
-            with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_test.txt', 'a') as f:
+            with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_test.csv', 'a') as f:
                 f.write(y_proba_test.to_csv())
             
-            with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_train.txt', 'a') as f:
+            with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_train.csv', 'a') as f:
                 f.write(y_proba_train.to_csv())
 
             #with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'a') as f:
