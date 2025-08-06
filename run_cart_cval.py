@@ -128,6 +128,9 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             #Create the directory if it doesn't exist
             os.makedirs(f'{dir_path}/cart/fold{i}/auroc_probs', exist_ok=True)
 
+            #os.remove(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_test.txt')
+            #os.remove(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_train.txt')
+
             with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_test.csv', 'a') as f:
                 f.write(y_proba_test.to_csv())
             
