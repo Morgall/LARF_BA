@@ -136,20 +136,20 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             #os.remove(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_test.txt')
             #os.remove(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_train.txt')
 
-            with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_test.csv', 'a') as f:
-                f.write(y_proba_test.to_csv())
+            #with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_test.csv', 'a') as f:
+                #f.write(y_proba_test.to_csv())
             
-            with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_train.csv', 'a') as f:
-                f.write(y_proba_train.to_csv())
+            #with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_train.csv', 'a') as f:
+                #f.write(y_proba_train.to_csv())
 
-            #with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'a') as f:
-                #f.write(f"CART execution time for depth {depth} : {end_time_cart - start_time_cart} seconds\n")
+            with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'a') as f:
+                f.write(f"CART execution time for depth {depth} : {end_time_cart - start_time_cart} seconds\n")
 
-            #with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_test.csv', 'w') as f:
-                #f.write(df_test.to_csv())
+            with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_test.csv', 'w') as f:
+                f.write(df_test.to_csv())
                 
-            #with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_train.csv', 'w') as f:
-                #f.write(df_train.to_csv())
+            with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_train.csv', 'w') as f:
+                f.write(df_train.to_csv())
         
         i+=1
 
