@@ -27,7 +27,7 @@ folds_cross_val = 10
 
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
-
+"""
 data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
 to_do_dict['test'] = data_test
 
@@ -69,6 +69,11 @@ to_do_dict['monk2'] = data_monk2
 
 data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
 to_do_dict['monk3'] = data_monk3
+
+"""
+
+data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
+to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
 
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values

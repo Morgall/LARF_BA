@@ -31,32 +31,33 @@ folds_cross_val = 10
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
 
-#data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
-#to_do_dict['test'] = data_test
+"""
+data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
+to_do_dict['test'] = data_test
 
-#data_breast_cancer = pd.read_csv("datasets/breast+cancer+wisconsin+diagnostic/wdbc_bin.csv")
-#to_do_dict['breast+cancer+wisconsin+diagnostic'] = data_breast_cancer
+data_breast_cancer = pd.read_csv("datasets/breast+cancer+wisconsin+diagnostic/wdbc_bin.csv")
+to_do_dict['breast+cancer+wisconsin+diagnostic'] = data_breast_cancer
 
-#data_car_eval = pd.read_csv("datasets/car_evaluation/car_bin.csv")
-#to_do_dict['car_evaluation'] = data_car_eval
+data_car_eval = pd.read_csv("datasets/car_evaluation/car_bin.csv")
+to_do_dict['car_evaluation'] = data_car_eval
 
-#data_mushroom = pd.read_csv("datasets/mushroom/agaricus_lepiota_bin.csv")
-#to_do_dict['mushroom'] = data_mushroom
+data_mushroom = pd.read_csv("datasets/mushroom/agaricus_lepiota_bin.csv")
+to_do_dict['mushroom'] = data_mushroom
 
-#data_nursery = pd.read_csv("datasets/nursery/nursery_bin.csv")
-#to_do_dict['nursery'] = data_nursery
+data_nursery = pd.read_csv("datasets/nursery/nursery_bin.csv")
+to_do_dict['nursery'] = data_nursery
 
-#data_seismic = pd.read_csv("datasets/seismic/seismic_bin.csv")
-#to_do_dict['seismic'] = data_seismic
+data_seismic = pd.read_csv("datasets/seismic/seismic_bin.csv")
+to_do_dict['seismic'] = data_seismic
 
-#data_spambase = pd.read_csv("datasets/spambase/spambase_bin.csv")
-#to_do_dict['spambase'] = data_spambase
+data_spambase = pd.read_csv("datasets/spambase/spambase_bin.csv")
+to_do_dict['spambase'] = data_spambase
 
-#data_wine = pd.read_csv("datasets/wine/wine_bin.csv")
-#to_do_dict['wine'] = data_wine
+data_wine = pd.read_csv("datasets/wine/wine_bin.csv")
+to_do_dict['wine'] = data_wine
 
-#data_adult = pd.read_csv("datasets/adult/stacked.csv")
-#to_do_dict['adult'] = data_adult
+data_adult = pd.read_csv("datasets/adult/stacked.csv")
+to_do_dict['adult'] = data_adult
 
 data_banknote = pd.read_csv("datasets/banknote+authentication/banknote_bin.csv")
 to_do_dict['banknote+authentication'] = data_banknote
@@ -72,6 +73,10 @@ to_do_dict['monk2'] = data_monk2
 
 data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
 to_do_dict['monk3'] = data_monk3
+"""
+
+data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
+to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
 
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values
