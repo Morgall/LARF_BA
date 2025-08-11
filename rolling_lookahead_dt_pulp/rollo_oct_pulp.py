@@ -3,6 +3,9 @@ from rolling_lookahead_dt_pulp.oct.tree import *
 from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import *
 from helpers.helpers import preprocess_dataframes
 
+import pickle
+import os
+
 import pandas as pd
 import time
 
@@ -28,6 +31,7 @@ def run(train: pd.DataFrame,
     :param big_m:
     :return:
     """
+    current_depth = 2
 
     train, test = preprocess_dataframes( #./rollo_oct/utils/helpers.py
         train_df=train,
@@ -41,11 +45,19 @@ def run(train: pd.DataFrame,
     train.columns = ["y", *P]
     test.columns = ["y", *P]
     K = sorted(list(set(df.y)))
+
+    result_dict = {} #adding dict to store solutions for every level
+    result_dict['tree'] = {}
+    result_dict['tree'][2] = {}
+
     main_model_time = time.time()
     # generate model
     main_model = generate_model_pulp(P=P, K=K, data=train, y_idx=0, big_m=big_m, criterion=criterion)
     # train model
     main_model = train_model_pulp(model_dict=main_model, data=train, P=P)
+
+    result_dict['tree'][2]['trained_dict'] = main_model
+
     # predict model
     result_train = predict_model_pulp(data=train, model_dict=main_model, P=P)
 
@@ -60,9 +72,7 @@ def run(train: pd.DataFrame,
     test_acc = len(result_test.loc[result_test["prediction"] == result_test["y"]]) / \
                len(result_test["y"])
     
-    result_dict = {} #adding dict to store solutions for every level
-    result_dict['tree'] = {}
-    result_dict['tree'][2] = {}
+    
     result_dict['tree'][2]['train'] = result_train[['y', 'prediction', 'leaf']]
     result_dict['tree'][2]['test'] = result_test[['y', 'prediction', 'leaf']]
 
