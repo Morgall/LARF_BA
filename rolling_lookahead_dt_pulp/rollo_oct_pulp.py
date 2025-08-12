@@ -17,8 +17,7 @@ def run(train: pd.DataFrame,
         depth: int = 2,
         criterion: str = "gini",
         time_limit: int = 1800,
-        big_m: int = 99,
-        big_dataset = False):
+        big_m: int = 99):
     """
 
     :param target_label:
@@ -31,7 +30,6 @@ def run(train: pd.DataFrame,
     :param big_m:
     :return:
     """
-    current_depth = 2
 
     train, test = preprocess_dataframes( #./rollo_oct/utils/helpers.py
         train_df=train,
