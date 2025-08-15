@@ -172,6 +172,7 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                 main_model["details"]["target_class"])
 
         result_dict['tree'][current_depth] = {}
+        result_dict['tree'][current_depth]['trained_dict'] = final_model
         
         ####### hier ist drin wie die train daten im aktuellen Teilbaum performen; dict in predict_model_pulp)
         
@@ -181,8 +182,6 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                                 P=features,
                                 pruned_nodes=pruned_nodes)
         #######################
-
-        result_dict['tree'][current_depth]['trained_dict'] = final_model
         
         result_dict['tree'][current_depth]['train'] = result_training_data[['y', 'prediction', 'leaf']] #adding dict to save classification for every level
         

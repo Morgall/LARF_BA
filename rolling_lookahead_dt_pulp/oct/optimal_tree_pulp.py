@@ -316,6 +316,9 @@ def predict_model_pulp(data: pd.DataFrame,
         t = 1
         d = 0
         while d < depth: #traversing tree until getting the leaves
+            if t not in var_a:
+                # Stop at this node, treat as leaf
+                break
             at = np.array(var_a[t]) #binary vector over all features (P) with 1 where feature was chosen by solver
             #print(at)
             if at.dot(x) == 1: #dot product (sum of the element-wise); überprüft also ob x und at am gleichen Index eine 1 stehen haben. Das bedeutet also, dass wir in eine "ja" Instanz gehen, also in den linken Teilbaum
@@ -325,6 +328,11 @@ def predict_model_pulp(data: pd.DataFrame,
             d = d + 1
             if t in pruned_nodes:
                 break
+
+        pred = target_class.get(t, None)
+        if pred is None:
+            raise ValueError(f"Prediction stopped at node {t}, which does not have a target_class entry. This sample may reach a pruned/unused branch.")
+        
         prediction.append(target_class[t]) #prediction (target label determined by model solver) for this row
         leaf_.append(t) #respective leaf to prediction (jedes leaf steht ja für ein target label)
     data["prediction"] = prediction #attach to data dataframe
