@@ -289,7 +289,7 @@ def train_model_pulp(data: pd.DataFrame,
 
 
 #predicts the class for each instance in data as DataFrame using decision tree model, and marks at which leaf node each instance ends up in.
-def predict_model_pulp(data: pd.DataFrame,
+def predict_model_pulp_backup(data: pd.DataFrame,
                   P: list,
                   model_dict: dict,
                   pruned_nodes: list = []) -> pd.DataFrame:
@@ -338,4 +338,62 @@ def predict_model_pulp(data: pd.DataFrame,
     data["prediction"] = prediction #attach to data dataframe
     data["leaf"] = leaf_ #attach to data dataframe
     logging.info("Prediction is done.")
+    return data
+
+
+
+#predicts the class for each instance in data as DataFrame using decision tree model, and marks at which leaf node each instance ends up in.
+"""
+Walk down the tree for a test sample, keep track (save) the most recent node reached that is a *leaf* (i.e., in `target_class`).
+If we ever reach a split (`t not in var_a`) that wasn't in the trained/pruned tree, or run off the tree, fallback to the label for the last valid node on the path.
+If, for some reason, the walk never passed through a leaf node (shouldn't really happen), then fallback to tree-majority.
+"""
+from scipy.stats import mode
+
+def predict_model_pulp(data: pd.DataFrame,
+                      P: list,
+                      model_dict: dict,
+                      pruned_nodes: list = []) -> pd.DataFrame:
+    prediction = []
+    leaf_ = []
+    depth = model_dict["depth"]
+    var_a = model_dict["details"]["var_a"]
+    target_class = model_dict["details"]["target_class"]
+
+    vals = list(target_class.values())
+    majority_class = mode(vals, keepdims=False).mode if len(vals) else 0
+
+    for idx, i in data.iterrows():
+        x = np.array(i[P])
+        t = 1
+        d = 0
+        last_valid_node = None
+        # Traverse tree for this sample
+        while d < depth:
+            if t in target_class:
+                last_valid_node = t
+            if t not in var_a:
+                break
+            at = np.array(var_a[t])
+            if at.dot(x) == 1:
+                t = t * 2
+            else:
+                t = t * 2 + 1
+            d += 1
+            if t in pruned_nodes:
+                # Could break here as well, record last_valid_node
+                break
+        # Now, decide which prediction to use
+        if t in target_class:
+            pred = target_class[t]
+        elif last_valid_node is not None:
+            pred = target_class[last_valid_node]
+        else:
+            # Should never hit this, but keep for extra safety
+            pred = majority_class
+
+        prediction.append(pred)
+        leaf_.append(t)
+    data["prediction"] = prediction
+    data["leaf"] = leaf_
     return data
