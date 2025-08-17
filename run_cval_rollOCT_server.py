@@ -3,6 +3,7 @@ from rolling_lookahead_dt_pulp import rollo_oct_pulp
 from sklearn.model_selection import StratifiedKFold
 import time
 import os
+import pickle
 
 """
 name_dataset_dict = {
@@ -31,7 +32,6 @@ folds_cross_val = 10
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
 
-"""
 data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
 to_do_dict['test'] = data_test
 
@@ -73,7 +73,6 @@ to_do_dict['monk2'] = data_monk2
 
 data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
 to_do_dict['monk3'] = data_monk3
-"""
 
 data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
 to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
@@ -131,6 +130,10 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
                 f.write(str(result_dict_pulp['tree'][depth]['test'].to_csv()))
             with open(f'{dir_path}/pulp/fold{i}/depth{depth}_classification_{dataset_name}_train.csv', 'w') as f:
                 f.write(str(result_dict_pulp['tree'][depth]['train'].to_csv()))
+
+        for depth in range(2, depth_rolling_tree+1):
+            with open(f'predict_model_dicts/testruns/{dataset_name}/predict_dict_{depth}.pkl', 'wb') as f: # 'wb' for write binary, rb for read binary
+                pickle.dump(result_dict_pulp['tree'][depth]['trained_dict'], f)
         
         i+=1
 

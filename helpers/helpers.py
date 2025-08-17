@@ -21,18 +21,21 @@ def preprocess_numerical(data: pd.DataFrame, target_label='y') -> pd.DataFrame:
     excluded_cols = [cname for cname in data.columns if data[cname].nunique() == 2] # list; excluded cols are those with target vars (not to be categorized) and cols with binary data
     excluded_cols = list(set(excluded_cols + [target_label])) #adds target col to excluded cols and handles case that target col is binary
     #target label cols are made categorical in make_data_binary() so its excluded here, otherwise it leads to errors
+    print(f'excluded cols: {excluded_cols}')
     int_cols_non_binary = [col for col in data.select_dtypes(include=['int']).columns 
                       if col not in excluded_cols]
     float_cols_non_binary = [col for col in data.select_dtypes(include=['float']).columns 
                       if col not in excluded_cols]
     numeric_cols_non_binary = int_cols_non_binary + float_cols_non_binary
+    print(f'preprocess_numerical non binary columns: {numeric_cols_non_binary}')
     for col in numeric_cols_non_binary:
         unique_vals = data[col].nunique()
         if unique_vals < 7:
             data[col] = data[col].astype('category')
         else:
+            #print("test")
             #data[col] = pd.cut(data[col], bins=4, labels=False, duplicates='drop') #pd.cut does work for quantiles for us
-            data[col] = pd.qcut(data[col], q=5, labels=False, duplicates='drop')
+            data[col] = pd.qcut(data[col], q=4, labels=False, duplicates='drop')
     return data
 
 
