@@ -131,8 +131,10 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             with open(f'{dir_path}/pulp/fold{i}/depth{depth}_classification_{dataset_name}_train.csv', 'w') as f:
                 f.write(str(result_dict_pulp['tree'][depth]['train'].to_csv()))
 
+        os.makedirs(f'predict_model_dicts/cvals_tree/{dataset_name}', exist_ok=True)
+
         for depth in range(2, depth_rolling_tree+1):
-            with open(f'predict_model_dicts/testruns/{dataset_name}/predict_dict_{depth}.pkl', 'wb') as f: # 'wb' for write binary, rb for read binary
+            with open(f'predict_model_dicts/cvals_tree/{dataset_name}/predict_dict_{depth}.pkl', 'wb') as f: # 'wb' for write binary, rb for read binary
                 pickle.dump(result_dict_pulp['tree'][depth]['trained_dict'], f)
         
         i+=1
