@@ -14,8 +14,8 @@ criterion_loss = "gini"
 #data = pd.read_csv("datasets/nursery/nursery_bin.csv")
 data = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
 
-# maybe also try m.solve(PULP_CBC_CMD(msg=True, timeLimit=time_limit, options=['presolve off']))
-train_df, test_df = train_test_split(data, test_size=0.05, train_size = 0.1, stratify=data['y'], random_state=42, big_m = 1)
+# maybe also try m.solve(PULP_CBC_CMD(msg=True, timeLimit=time_limit, options=['presolve off'])), big_m = 1
+train_df, test_df = train_test_split(data, test_size=0.05, train_size = 0.1, stratify=data['y'], random_state=42, big_m = 99)
 
 feature_columns = train_df.columns[1:]
 
