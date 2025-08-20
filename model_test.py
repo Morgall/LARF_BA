@@ -14,8 +14,7 @@ criterion_loss = "gini"
 #data = pd.read_csv("datasets/nursery/nursery_bin.csv")
 data = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
 
-# maybe also try m.solve(PULP_CBC_CMD(msg=True, timeLimit=time_limit, options=['presolve off'])), big_m = 1
-train_df, test_df = train_test_split(data, test_size=0.05, train_size = 0.1, stratify=data['y'], random_state=42, big_m = 99)
+train_df, test_df = train_test_split(data, test_size=0.05, train_size = 0.1, stratify=data['y'], random_state=42)
 
 feature_columns = train_df.columns[1:]
 
@@ -23,7 +22,8 @@ feature_columns = train_df.columns[1:]
 os.makedirs(f'results/microbiome_taxa_easy/test', exist_ok=True)
 os.makedirs(f'predict_model_dicts/test/microbiome_taxa_easy', exist_ok=True)
 
-result_dict_pulp =rollo_oct_pulp.run(train=train_df, test=test_df, target_label="y", features=feature_columns, depth=depth_rolling_tree, criterion=criterion_loss)
+# maybe also try m.solve(PULP_CBC_CMD(msg=True, timeLimit=time_limit, options=['presolve off'])), big_m = 1
+result_dict_pulp =rollo_oct_pulp.run(train=train_df, test=test_df, target_label="y", features=feature_columns, depth=depth_rolling_tree, criterion=criterion_loss, big_m = 99)
 
 for depth in range(2,depth_rolling_tree+1):
     with open(f'results/microbiome_taxa_easy/test/depth{depth}_classification_microbiome_taxa_easy_test.csv', 'w') as f:
