@@ -91,7 +91,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
     for train_idx, test_idx in skf.split(features, targets): #gives row indices
         
-        with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'w') as f:
+        with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'w') as f:
             pass  # This just creates/truncates the file
 
         print(dataset_name)
