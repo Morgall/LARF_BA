@@ -1,7 +1,0 @@
-CART execution time for depth 2 : 0.008689403533935547 seconds
-CART execution time for depth 3 : 0.008707761764526367 seconds
-CART execution time for depth 4 : 0.00872945785522461 seconds
-CART execution time for depth 5 : 0.008794784545898438 seconds
-CART execution time for depth 6 : 0.010468006134033203 seconds
-CART execution time for depth 7 : 0.012227535247802734 seconds
-CART execution time for depth 8 : 0.012037277221679688 seconds

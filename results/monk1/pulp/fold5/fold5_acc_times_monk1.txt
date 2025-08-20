@@ -1,2 +1,10 @@
 8: {'training_accuracy': 1.0, 'test_accuracy': 1.0, 'time': 0.17414402961730957}
 Pulp execution time for depth 8 : 1.7532927989959717 seconds
+2: {'training_accuracy': 0.774, 'test_accuracy': 0.8035714285714286, 'time': 0.21537494659423828}
+3: {'training_accuracy': 0.89, 'test_accuracy': 0.9107142857142857, 'time': 0.4059481620788574}
+4: {'training_accuracy': 0.978, 'test_accuracy': 0.9464285714285714, 'time': 0.3572416305541992}
+5: {'training_accuracy': 1.0, 'test_accuracy': 1.0, 'time': 0.246382474899292}
+6: {'training_accuracy': 1.0, 'test_accuracy': 1.0, 'time': 0.17472434043884277}
+7: {'training_accuracy': 1.0, 'test_accuracy': 1.0, 'time': 0.1750171184539795}
+8: {'training_accuracy': 1.0, 'test_accuracy': 1.0, 'time': 0.17382287979125977}
+Pulp execution time for depth 8 : 1.7505748271942139 seconds
