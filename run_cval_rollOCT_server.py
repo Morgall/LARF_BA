@@ -24,14 +24,14 @@ depth_rolling_tree = 8
 criterion_loss = "gini"
 #criterion_loss = "misclassification"
 
-folds_cross_val = 10
+folds_cross_val = 2
 
 #dataset_name = 'adult' # folder in 'results' will be named after it, results/dataset_name contains result .txt and .csv
 #dir_path = f'results/{dataset_name}'
 
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
-
+"""
 data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
 to_do_dict['test'] = data_test
 
@@ -73,6 +73,7 @@ to_do_dict['monk2'] = data_monk2
 
 data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
 to_do_dict['monk3'] = data_monk3
+"""
 
 data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
 to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
@@ -90,6 +91,9 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
     i=1 # index for fold number
 
     for train_idx, test_idx in skf.split(features, targets): #gives row indices
+
+        # Create the directory if it doesn't exist
+        os.makedirs(f'{dir_path}/pulp/fold{i}', exist_ok=True)
         
         with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'w') as f:
             pass  # This just creates/truncates the file
@@ -115,8 +119,6 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
         #print(f"Pulp execution time; 10 fold #{i}; for depth {depth_rolling_tree} : {end_time_pulp - start_time_pulp} seconds\n")
 
-        # Create the directory if it doesn't exist
-        os.makedirs(f'{dir_path}/pulp/fold{i}', exist_ok=True)
 
         for depth in range(2,depth_rolling_tree+1):
             with open(f'{dir_path}/pulp/fold{i}/fold{i}_acc_times_{dataset_name}.txt', 'a') as f:
