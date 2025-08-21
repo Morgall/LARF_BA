@@ -23,7 +23,7 @@ depth_tree = 8
 criterion_loss = "gini"
 #criterion_loss = "misclassification"
 
-folds_cross_val = 10
+folds_cross_val = 2
 
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
@@ -31,6 +31,7 @@ to_do_dict = dict() # add datasets to be run into this dict and choose key as da
 data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
 to_do_dict['test'] = data_test
 
+"""
 data_breast_cancer = pd.read_csv("datasets/breast+cancer+wisconsin+diagnostic/wdbc_bin.csv")
 to_do_dict['breast+cancer+wisconsin+diagnostic'] = data_breast_cancer
 
@@ -72,7 +73,7 @@ to_do_dict['monk3'] = data_monk3
 
 data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
 to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
-
+"""
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 

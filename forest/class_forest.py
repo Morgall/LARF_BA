@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.stats import mode
 import multiprocessing
 
-from forest.class_forest import CustomTreeWrapper
+from forest.class_tree import CustomTreeWrapper
 
 def fit_single_tree(args):
     X, y, tree_kwargs, random_state = args

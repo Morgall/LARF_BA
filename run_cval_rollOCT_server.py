@@ -24,7 +24,7 @@ depth_rolling_tree = 8
 criterion_loss = "gini"
 #criterion_loss = "misclassification"
 
-folds_cross_val = 2
+folds_cross_val = 10
 
 #dataset_name = 'adult' # folder in 'results' will be named after it, results/dataset_name contains result .txt and .csv
 #dir_path = f'results/{dataset_name}'
