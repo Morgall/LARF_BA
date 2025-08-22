@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
             end_time_forest= time.time()
 
-            with open(f'{dir_path}/forest_n{number_of_estimators}_tree_depth_{depth_rolling_tree}/fold{i}/fold{i}_forest_time_{dataset_name}.txt', 'a') as f:
+            with open(f'{dir_path}/forest_n{number_of_estimators}_tree_depth_{depth_rolling_tree}/fold{i}/fold{i}_forest_time_{dataset_name}.txt', 'w') as f:
                 f.write(f"Forest execution time for {number_of_estimators} estimators with depth {depth_rolling_tree} : {end_time_forest - start_time_forest} seconds\n")
 
             with open(f'{dir_path}/forest_n{number_of_estimators}_tree_depth_{depth_rolling_tree}/fold{i}/fold{i}_forest_result_{dataset_name}.csv', 'w') as f:
@@ -119,7 +119,7 @@ if __name__ == "__main__":
             i+=1
     
     end_time_run = time.time()
-    with open(f'total_runtime_all_datasets.txt', 'a') as f:
+    with open(f'total_runtime_all_datasets.txt', 'w') as f:
         f.write(f"Total runtime: {end_time_run - start_time_run} seconds\n")
 
 

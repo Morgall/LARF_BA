@@ -23,7 +23,7 @@ depth_tree = 8
 criterion_loss = "gini"
 #criterion_loss = "misclassification"
 
-folds_cross_val = 2
+folds_cross_val = 10
 
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
