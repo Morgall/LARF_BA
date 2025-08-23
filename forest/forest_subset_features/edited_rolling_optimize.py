@@ -5,12 +5,14 @@ from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import train_model_pulp, pr
 
 from rolling_lookahead_dt_pulp.oct.tree import *
 
-from edited_model import generate_model_tree
+from forest.forest_subset_features.edited_model import generate_model_tree
 
 
-def rolling_optimize_pulp(predefined_model: Optional[dict],
+def rolling_optimize(predefined_model: Optional[dict],
                       train_data: pd.DataFrame,
                       test_data: pd.DataFrame,
+                      original_training_dataset: pd.DataFrame,
+                      features_orig_dataset : int,
                       main_depth: int,
                       target_depth: int,
                       features: list,
@@ -59,30 +61,37 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
         logging.info(f"Extending tree from Depth {main_depth} to "
                      f"{main_depth + level}")
         iter_time = time.time()
-        to_go_deep_nodes_ = {}
-        sub_K = {}
+        to_go_deep_nodes_ = {} # tracks which nodes still need splitting (impure)
+        sub_K = {} #  keeps track of possible target labels for each parent (class set at that node)
 
         current_depth = main_depth + level
 
+        #finds the set of parent nodes whose children contain misclassifications → these are the nodes to refine further
         parents_to_optimize = parents_of_nodes_to_branch_on( #gives parent of impure node; e.g. {3: [np.int64(7)]} because node 3 ist parent of node 7 (leaf) that is impure
             go_deep_nodes=to_go_deep_nodes)
         
-
+        #Iterating through parents to optimize
         for node_ in parents_to_optimize:
-            leafs_ = parents_to_optimize[node_] # gets the [np.int64(7)] from the example {3: [np.int64(7)]}
-            sub_features = selected_features[int(node_ / 2)]
+            leafs_ = parents_to_optimize[node_] # gets the [np.int64(7)] from the example {3: [np.int64(7)]}; gets the parent
+            sub_features = selected_features[int(node_ / 2)] #  attributes/features chosen at the parent’s parent level (this enforces consistency in feature selection
 
+            # Build subproblem dataset
+
+            #Case 1: extending at the very first level under main_depth:
+            # Filters the dataset for records that follow the parent’s path into this leaf, based on its splitting variable. Result = smaller training dataset for this local subtree.
             if level == 1:
                 first_var = leaf_nodes_path[leafs_[0]][0]
                 arr = df_arr[np.where((df_arr[:, sub_features[1]] ==
                                        first_var))]
 
-                sub_K[node_] = list(np.unique(arr[:, y_idx]))
+                sub_K[node_] = list(np.unique(arr[:, y_idx])) # available class labels
                 cols = features.copy()
                 cols.insert(y_idx, 'y')
                 new_train_data_dict[node_] = pd.DataFrame(
                     arr, columns=cols,
                     index=None)
+            # Case 2: deeper levels
+            #Instead of global df_arr, it uses the already extracted parent-local dataset to refine further down
             else:
                 arr = new_train_data_dict[int(node_ / 2)]
                 arr = np.array(arr)
@@ -99,6 +108,11 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
             logging.info(
                 f"Processing for Parent Node: {node_} of Leaf "
                 f"Node(s): {leafs_} at Level: {level}")
+            
+
+            #Model generation & training
+            #Builds an optimization model (PuLP MILP) to learn the optimal split at this node.
+            #Then trains it given the sub-data.
             main_model = generate_model_tree(P=features,
                                         K=sub_K[node_],
                                         data=new_train_data_dict[node_],
@@ -109,12 +123,18 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
             main_model = train_model_pulp(model_dict=main_model,
                                      data=new_train_data_dict[node_],
                                      P=features)
+            
+            #Applies the trained sub-model to the sub-dataset
             result_ = predict_model_pulp(
                 data=new_train_data_dict[node_],
                 model_dict=main_model,
                 P=features)
+            # Determines which leaves remain misclassified
             misclassified_leafs = find_misclassification(df=result_)
             del result_
+
+            #Update model’s splitting rules
+            #Realigns the parent-node feature variables (var_a) with the new indices in the expanded tree.
             temp_dict = {}
             for t in predefined_model["nodes"]["parent_nodes"]:
                 new_idx = parent_pattern(sub_leaf=t,
@@ -124,7 +144,10 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
             main_model["details"]["var_a"] = temp_dict
 
 
-            # update extended tree's target class
+            # Update target-class assignments
+            # Each child leaf gets assigned a class.
+            # If misclassified => it’s marked for further splitting (to_go_deep_nodes_)
+            # If correct => it’s added to list of pruned/terminal nodes.
             temp_target = {}
             for t in predefined_model["nodes"]["leaf_nodes"]:
                 new_idx = leaf_pattern(sub_leaf=t, depth=main_depth,
@@ -138,11 +161,10 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                     else:
                         pruned_nodes.append(new_idx)
 
-
-
-            # reorganize pruned nodes - if one of the leaf has
-            # misclassified, then its parent will reoptimize.
             temp_class_assign = copy.deepcopy(pruned_nodes)
+
+            # Reorganize pruned nodes
+            # Ensures pruning is consistent: if a child is misclassified, its parent cannot stay pruned.
             for i in temp_class_assign:
                 for parent in parents_to_optimize:
                     if not (i != parent * 2 and i != (
@@ -159,8 +181,14 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
                 axis=1)
             
 
+            #Finalize bookkeeping
+            #Drop unnecessary columns (prediction, leaf).
+            # Update global tracking:
+            # This “merges” the local sub-model into the global final model by updating:
+            # - splitting variables (var_a)
+            # - selected features per node
+            # - target class assignments
 
-            # eliminate branched on node from target class
             main_model["details"]["target_class"] = temp_target
             selected_features[node_] = copy.deepcopy(
                 main_model["details"][
@@ -173,6 +201,8 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
             final_model["details"]["target_class"].update(
                 main_model["details"]["target_class"])
 
+        
+        
         result_dict['tree'][current_depth] = {}
         result_dict['tree'][current_depth]['trained_dict'] = final_model
         
@@ -223,3 +253,4 @@ def rolling_optimize_pulp(predefined_model: Optional[dict],
 
         }
     return result_dict
+

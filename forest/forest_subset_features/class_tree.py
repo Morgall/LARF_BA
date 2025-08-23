@@ -4,12 +4,12 @@ import pandas as pd
 from sklearn.utils.validation import check_is_fitted
 #from sklearn.base import BaseEstimator, ClassifierMixin, clone
 
-from rolling_lookahead_dt_pulp.rolling_tree.rolling_optimize_pulp import rolling_optimize_pulp
+from forest.forest_subset_features.edited_rolling_optimize import rolling_optimize
 from rolling_lookahead_dt_pulp.oct.tree import *
 from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import train_model_pulp, predict_model_pulp
 from helpers.helpers import preprocess_dataframes
 
-from edited_model import generate_model_tree
+from forest.forest_subset_features.edited_model import generate_model_tree
 
 # was hiermit eben nicht geht ist, dass man auf Trainingsdaten trainiert (was einem das reine Modell geben sollte). Dabei werden aber leider gleichzeitig
 # die Testdaten auf diesen Modell predicted
@@ -44,9 +44,29 @@ class CustomTreeWrapper:
         self.result_dict = {} #adding dict to store solutions for every level
         self.result_dict['tree'] = {}
         self.result_dict['tree'][2] = {}
+
+        self.features_orig_dataset = len(self.P)
+
+        amount_X_consider = int(np.sqrt(self.features_orig_dataset))
+
+        #target = df.iloc[:, [0]] 
+        target = train[['y']]
+
+        #features = df.iloc[:, 1:] 
+        features = train.loc[:, train.columns != 'y']
+
+        selected_feature_cols = np.random.choice(features.columns, size=amount_X_consider, replace=True)
+        selected_features = features[selected_feature_cols]
+
+        train = pd.concat([target, selected_features], axis=1)
+
+        #P = list(features.columns)
+        P = [int(i) for i in list(train.loc[:, train.columns != 'y'].columns)]
+
+        P = [i for i in range(len(P))]
         
         # generate model
-        self.main_model = generate_model_tree(P=self.P, K=self.K, data=train, y_idx=0, big_m=self.big_m, criterion=self.criterion)
+        self.main_model = generate_model_tree(P=P, K=self.K, data=train, y_idx=0, big_m=self.big_m, criterion=self.criterion)
     
     def fit(self, X, y):
 
@@ -61,16 +81,19 @@ class CustomTreeWrapper:
         self.P = [int(i) for i in 
             list(train.loc[:, train.columns != 'y'].columns)]
         
-        self.main_model = train_model_pulp(model_dict=self.main_model, data=train, P=self.P)
+        self.processed_train = train
+        self.processed_test = test
+        
+        self.main_model = train_model_pulp(model_dict=self.main_model, data=self.processed_train, P=self.main_model["P"])
 
         self.result_dict['tree'][2]['trained_dict'] = self.main_model
 
         # predict model
-        result_train = predict_model_pulp(data=train, model_dict=self.main_model, P=self.P)
+        result_train = predict_model_pulp(data=self.processed_train, model_dict=self.main_model, P=self.main_model["P"])
 
         misclassified_leafs = find_misclassification(df=result_train)
 
-        result_test = predict_model_pulp(data=test, model_dict=self.main_model, P=self.P)
+        result_test = predict_model_pulp(data=self.processed_test, model_dict=self.main_model, P=self.main_model["P"])
         
         
         train_acc = len(result_train.loc[result_train["prediction"] == result_train["y"]]) / \
@@ -92,9 +115,11 @@ class CustomTreeWrapper:
         test = test.drop(["prediction", "leaf"], axis=1)
 
         if self.depth > 2:
-            self.result_dict = rolling_optimize_pulp(predefined_model=self.main_model,
+            self.result_dict = rolling_optimize(predefined_model=self.main_model,
                                             train_data=train,
                                             test_data=test,
+                                            original_training_dataset = self.processed_train,
+                                            features_orig_dataset = self.features_orig_dataset,
                                             main_depth=2,
                                             target_depth=self.depth,
                                             features=self.P,
