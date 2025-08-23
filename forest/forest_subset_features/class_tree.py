@@ -35,17 +35,16 @@ class CustomTreeWrapper:
         features = self.features)
 
         df = pd.concat([train, test])
-        self.P = [int(i) for i in
-            list(train.loc[:, train.columns != 'y'].columns)]
-        train.columns = ["y", *self.P]
-        test.columns = ["y", *self.P]
+        self.all_features_list = [int(i) for i in list(train.loc[:, train.columns != 'y'].columns)] #used to be P
+        train.columns = ["y", *self.all_features_list]
+        test.columns = ["y", *self.all_features_list]
         self.K = sorted(list(set(df.y)))
 
         self.result_dict = {} #adding dict to store solutions for every level
         self.result_dict['tree'] = {}
         self.result_dict['tree'][2] = {}
 
-        self.features_orig_dataset = len(self.P)
+        self.features_orig_dataset = len(self.all_features_list)
 
         amount_X_consider = int(np.sqrt(self.features_orig_dataset))
 
@@ -63,10 +62,10 @@ class CustomTreeWrapper:
         #P = list(features.columns)
         P = [int(i) for i in list(train.loc[:, train.columns != 'y'].columns)]
 
-        P = [i for i in range(len(P))]
+        self.P = [i for i in range(len(P))]
         
         # generate model
-        self.main_model = generate_model_tree(P=P, K=self.K, data=train, y_idx=0, big_m=self.big_m, criterion=self.criterion)
+        self.main_model = generate_model_tree(P=self.P, K=self.K, data=train, y_idx=0, big_m=self.big_m, criterion=self.criterion)
     
     def fit(self, X, y):
 
@@ -84,16 +83,16 @@ class CustomTreeWrapper:
         self.processed_train = train
         self.processed_test = test
         
-        self.main_model = train_model_pulp(model_dict=self.main_model, data=self.processed_train, P=self.main_model["P"])
+        self.main_model = train_model_pulp(model_dict=self.main_model, data=self.processed_train, P=self.P)
 
         self.result_dict['tree'][2]['trained_dict'] = self.main_model
 
         # predict model
-        result_train = predict_model_pulp(data=self.processed_train, model_dict=self.main_model, P=self.main_model["P"])
+        result_train = predict_model_pulp(data=self.processed_train, model_dict=self.main_model, P=self.P)
 
         misclassified_leafs = find_misclassification(df=result_train)
 
-        result_test = predict_model_pulp(data=self.processed_test, model_dict=self.main_model, P=self.main_model["P"])
+        result_test = predict_model_pulp(data=self.processed_test, model_dict=self.main_model, P=self.P)
         
         
         train_acc = len(result_train.loc[result_train["prediction"] == result_train["y"]]) / \
