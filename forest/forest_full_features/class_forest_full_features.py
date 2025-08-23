@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.stats import mode
 import multiprocessing
 
-from forest.class_tree import CustomTreeWrapper
+from rolling_lookahead_dt_restructured.forest.forest_full_features.class_tree_full_features import CustomTreeWrapper
 
 def fit_single_tree(args):
     X, y, tree_kwargs, random_state = args

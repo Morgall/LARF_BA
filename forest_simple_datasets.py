@@ -1,4 +1,4 @@
-from forest.class_forest import CustomEnsembleClassifier
+from forest.forest_full_features.class_forest_full_features import CustomEnsembleClassifier
 import pandas as pd
 import time
 import os
