@@ -6,8 +6,10 @@ from sklearn.utils.validation import check_is_fitted
 
 from rolling_lookahead_dt_pulp.rolling_tree.rolling_optimize_pulp import rolling_optimize_pulp
 from rolling_lookahead_dt_pulp.oct.tree import *
-from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import *
+from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import train_model_pulp, predict_model_pulp
 from helpers.helpers import preprocess_dataframes
+
+from edited_model import generate_model_tree
 
 # was hiermit eben nicht geht ist, dass man auf Trainingsdaten trainiert (was einem das reine Modell geben sollte). Dabei werden aber leider gleichzeitig
 # die Testdaten auf diesen Modell predicted
@@ -44,7 +46,7 @@ class CustomTreeWrapper:
         self.result_dict['tree'][2] = {}
         
         # generate model
-        self.main_model = generate_model_pulp(P=self.P, K=self.K, data=train, y_idx=0, big_m=self.big_m, criterion=self.criterion)
+        self.main_model = generate_model_tree(P=self.P, K=self.K, data=train, y_idx=0, big_m=self.big_m, criterion=self.criterion)
     
     def fit(self, X, y):
 
