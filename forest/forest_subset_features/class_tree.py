@@ -6,17 +6,17 @@ from sklearn.utils.validation import check_is_fitted
 
 from forest.forest_subset_features.edited_rolling_optimize import rolling_optimize
 from rolling_lookahead_dt_pulp.oct.tree import *
-from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import train_model_pulp, predict_model_pulp
+from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import predict_model_pulp
 from helpers.helpers import preprocess_dataframes
 
-from forest.forest_subset_features.edited_model import generate_model_tree
+from forest.forest_subset_features.edited_model import generate_model_tree, train_model
 
 # was hiermit eben nicht geht ist, dass man auf Trainingsdaten trainiert (was einem das reine Modell geben sollte). Dabei werden aber leider gleichzeitig
 # die Testdaten auf diesen Modell predicted
 # Das Resultat ist also, dass man nicht andere Testdaten auf dem fertigen modell testen kann
 
 class CustomTreeWrapper:
-    def __init__(self, train_data, test_data, depth=None, criterion='gini', target_label=None, features=None, time_limit = 1800, big_m = 99):
+    def __init__(self, train_data, test_data, depth=None, criterion='gini', target_label=None, features=None, time_limit = 1800, big_m = 99, random_state=None):
         self.depth = depth
         self.criterion = criterion
         self.test_data = test_data
@@ -25,6 +25,7 @@ class CustomTreeWrapper:
         self.features = features
         self.time_limit = time_limit
         self.big_m = big_m
+        self.random_state = random_state
         self.construct()
 
     def construct(self):
@@ -36,6 +37,7 @@ class CustomTreeWrapper:
 
         df = pd.concat([train, test])
         self.all_features_list = [int(i) for i in list(train.loc[:, train.columns != 'y'].columns)] #used to be P
+        self.features_orig_dataset = len(self.all_features_list)
         train.columns = ["y", *self.all_features_list]
         test.columns = ["y", *self.all_features_list]
         self.K = sorted(list(set(df.y)))
@@ -44,25 +46,21 @@ class CustomTreeWrapper:
         self.result_dict['tree'] = {}
         self.result_dict['tree'][2] = {}
 
-        self.features_orig_dataset = len(self.all_features_list)
+        # --- Choose subset of features for THIS TREE/BLOCK (random forest style) ---
+        amount_X_consider = max(1, int(np.sqrt(self.features_orig_dataset)))
+        rng = np.random.RandomState(self.random_state)
+        subset = rng.choice(self.all_features_list, size=amount_X_consider, replace=False)
+        subset = list(subset)
+        #Use only the selected features for this tree
+        train = train[['y'] + subset]
+        test = test[['y'] + subset]
 
-        amount_X_consider = int(np.sqrt(self.features_orig_dataset))
+        local_P = list(range(1, len(subset) + 1))  # [1,2,3,...]
+        local_to_global = dict(zip(local_P, subset))
+        global_to_local = dict(zip(subset, local_P))
 
-        #target = df.iloc[:, [0]] 
-        target = train[['y']]
-
-        #features = df.iloc[:, 1:] 
-        features = train.loc[:, train.columns != 'y']
-
-        selected_feature_cols = np.random.choice(features.columns, size=amount_X_consider, replace=True)
-        selected_features = features[selected_feature_cols]
-
-        train = pd.concat([target, selected_features], axis=1)
-
-        #P = list(features.columns)
-        P = [int(i) for i in list(train.loc[:, train.columns != 'y'].columns)]
-
-        self.P = [i for i in range(len(P))]
+        self.P = local_P
+        self.feature_idx_map = local_to_global
         
         # generate model
         self.main_model = generate_model_tree(P=self.P, K=self.K, data=train, y_idx=0, big_m=self.big_m, criterion=self.criterion)
@@ -77,13 +75,10 @@ class CustomTreeWrapper:
                                             target_label = self.target_label,
                                             features = self.features)
         
-        self.P = [int(i) for i in 
-            list(train.loc[:, train.columns != 'y'].columns)]
-        
         self.processed_train = train
         self.processed_test = test
         
-        self.main_model = train_model_pulp(model_dict=self.main_model, data=self.processed_train, P=self.P)
+        self.main_model = train_model(model_dict=self.main_model, data=self.processed_train, P=self.P)
 
         self.result_dict['tree'][2]['trained_dict'] = self.main_model
 

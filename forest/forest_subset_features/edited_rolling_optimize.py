@@ -1,11 +1,11 @@
 from typing import Optional
 import time
 
-from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import train_model_pulp, predict_model_pulp
+from rolling_lookahead_dt_pulp.oct.optimal_tree_pulp import predict_model_pulp
 
 from rolling_lookahead_dt_pulp.oct.tree import *
 
-from forest.forest_subset_features.edited_model import generate_model_tree
+from forest.forest_subset_features.edited_model import generate_model_tree, train_model
 
 
 def rolling_optimize(predefined_model: Optional[dict],
@@ -15,230 +15,212 @@ def rolling_optimize(predefined_model: Optional[dict],
                       features_orig_dataset : int,
                       main_depth: int,
                       target_depth: int,
-                      features: list,
+                      features: list, # This is the subset from the root tree
                       time_limit: float,
                       to_go_deep_nodes: list,
                       result_dict: dict,
-                      criterion: str = "gini"
+                      criterion: str = "gini",
+                      random_state = None
                       ) -> pd.DataFrame:
     """
-
-    :param predefined_model:
-    :param train_data:
-    :param test_data:
-    :param main_depth:
-    :param target_depth:
-    :param features:
-    :param time_limit:
-    :return:
+    Performs rolling optimization to extend a pre-trained decision tree.
+    It now includes random feature subsetting for each new subtree.
     """
-
-    model_name = f"rolling_optimizing_gini_{main_depth}"  #why only gini?
+    model_name = f"rolling_optimizing_gini_{main_depth}"
     logging.info(f"Running {model_name} with main depth {main_depth} by "
                  f"diving in "
                  f"2 level with target depth {target_depth}")
 
-    df_arr = np.array(train_data)
-    leaf_nodes_path = predefined_model["nodes"]["leaf_nodes_path"] # {4: [1, 1], 5: [1, 0], 6: [0, 1], 7: [0, 0]}
+    # Use a copy to avoid modifying the original dataframes
+    df = train_data.copy()
+    leaf_nodes_path = predefined_model["nodes"]["leaf_nodes_path"]
     y_idx = 0
     predefined_model.pop('model')
     predefined_model.pop('params')
-    final_model = copy.deepcopy(predefined_model) #new dict without model and params
-    
+    final_model = copy.deepcopy(predefined_model)
 
-    selected_features_temp = copy.deepcopy(predefined_model["details"][ # z.B. {1: 112, 2: 50, 3: 111}
-                                               "selected_features"])
-    selected_features = {1: selected_features_temp} # z.B. {1: {1: 112, 2: 50, 3: 111}}
-    to_go_deep_nodes = {i: i for i in to_go_deep_nodes} # keeps deep nodes (parents of impure leafs). z.B {np.int64(7): np.int64(7)}
-    pruned_nodes = [i for i in leaf_nodes_path if i not in to_go_deep_nodes] #all nodes not in to_go_deep_nodes z.b. [4, 5, 6]
+    selected_features_temp = copy.deepcopy(predefined_model["details"]["selected_features"])
+    selected_features = {1: selected_features_temp}
+    to_go_deep_nodes = {i: i for i in to_go_deep_nodes}
+    pruned_nodes = [i for i in leaf_nodes_path if i not in to_go_deep_nodes]
     
+    # Get the original feature list from the provided dataset
+    original_feature_list = list(original_training_dataset.columns.drop('y'))
     
     new_train_data_dict = {}
-    #result_dict = {}
-
+    rng = np.random.RandomState(random_state)
     
-    for level in range(1, target_depth - main_depth + 1): #for each level of the rolling tree, "breadth first search approach"
+    for level in range(1, target_depth - main_depth + 1):
         logging.info(f"Extending tree from Depth {main_depth} to "
                      f"{main_depth + level}")
         iter_time = time.time()
-        to_go_deep_nodes_ = {} # tracks which nodes still need splitting (impure)
-        sub_K = {} #  keeps track of possible target labels for each parent (class set at that node)
+        to_go_deep_nodes_ = {}
+        sub_K = {}
 
-        current_depth = main_depth + level
-
-        #finds the set of parent nodes whose children contain misclassifications → these are the nodes to refine further
-        parents_to_optimize = parents_of_nodes_to_branch_on( #gives parent of impure node; e.g. {3: [np.int64(7)]} because node 3 ist parent of node 7 (leaf) that is impure
+        parents_to_optimize = parents_of_nodes_to_branch_on(
             go_deep_nodes=to_go_deep_nodes)
-        
-        #Iterating through parents to optimize
+
         for node_ in parents_to_optimize:
-            leafs_ = parents_to_optimize[node_] # gets the [np.int64(7)] from the example {3: [np.int64(7)]}; gets the parent
-            sub_features = selected_features[int(node_ / 2)] #  attributes/features chosen at the parent’s parent level (this enforces consistency in feature selection
+            leafs_ = parents_to_optimize[node_]
+            
+            # --- Random Feature Selection for the Current Subtree ---
+            # Correctly select a random subset of features from the original feature list.
+            amount_X_consider = max(1, int(np.sqrt(features_orig_dataset)))
+            subset_features_global = list(rng.choice(original_feature_list, 
+                                              size=amount_X_consider, 
+                                              replace=False))
 
-            # Build subproblem dataset
-
-            #Case 1: extending at the very first level under main_depth:
-            # Filters the dataset for records that follow the parent’s path into this leaf, based on its splitting variable. Result = smaller training dataset for this local subtree.
+            # --- Data Filtering for the Subtree based on path conditions ---
             if level == 1:
+                # The split feature ID is the key to the selected_features dictionary
+                # It is not a list, but a single integer
+                main_split_feature_id = selected_features[1][1]
+                
+                # Filter the DataFrame rows based on the split feature and its value.
                 first_var = leaf_nodes_path[leafs_[0]][0]
-                arr = df_arr[np.where((df_arr[:, sub_features[1]] ==
-                                       first_var))]
+                
+                # Check for the correct feature ID in the data and filter.
+                sub_df_rows = df[df[main_split_feature_id] == first_var].copy()
+                
+                # Filter the columns to create the new sub-problem dataset.
+                cols_to_keep = ['y'] + subset_features_global
+                sub_train_data = sub_df_rows[cols_to_keep]
 
-                sub_K[node_] = list(np.unique(arr[:, y_idx])) # available class labels
-                cols = features.copy()
-                cols.insert(y_idx, 'y')
-                new_train_data_dict[node_] = pd.DataFrame(
-                    arr, columns=cols,
-                    index=None)
-            # Case 2: deeper levels
-            #Instead of global df_arr, it uses the already extracted parent-local dataset to refine further down
+                new_train_data_dict[node_] = sub_train_data
+                sub_K[node_] = list(np.unique(new_train_data_dict[node_].y))
+                
             else:
-                arr = new_train_data_dict[int(node_ / 2)]
-                arr = np.array(arr)
+                # Use the already filtered data from the previous level.
+                arr_df = new_train_data_dict[int(node_ / 2)].copy()
+                # Get the global feature ID for the previous split.
+                prev_split_feature_global = selected_features[int(node_ / 2)][2]
                 first_var = leaf_nodes_path[to_go_deep_nodes[leafs_[0]]][0]
-                arr = arr[np.where((arr[:, sub_features[1]] ==
-                                    first_var))]
-                sub_K[node_] = list(np.unique(arr[:, y_idx]))
-                cols = features.copy()
-                cols.insert(y_idx, 'y')
-                new_train_data_dict[node_] = pd.DataFrame(
-                    arr, columns=cols,
-                    index=None)
+                
+                # Filter rows based on the previous level's split.
+                arr_rows_df = arr_df[arr_df[prev_split_feature_global] == first_var]
+                
+                # Now, filter columns to the NEW random subset.
+                sub_train_data_df = arr_rows_df[['y'] + subset_features_global]
+                
+                new_train_data_dict[node_] = sub_train_data_df
+                sub_K[node_] = list(np.unique(new_train_data_dict[node_].y))
 
-            logging.info(
-                f"Processing for Parent Node: {node_} of Leaf "
-                f"Node(s): {leafs_} at Level: {level}")
+            logging.info(f"Processing for Parent Node: {node_} of Leaf "
+                         f"Node(s): {leafs_} at Level: {level}")
+                         
+            # --- Convert global feature IDs to local indices for the sub-model ---
+            # The `generate_model_tree` function expects local indices (1, 2, 3...)
+            # so we need to create a new mapping for each sub-problem.
+            local_P_sub = list(range(1, len(subset_features_global) + 1))
             
-
-            #Model generation & training
-            #Builds an optimization model (PuLP MILP) to learn the optimal split at this node.
-            #Then trains it given the sub-data.
-            main_model = generate_model_tree(P=features,
-                                        K=sub_K[node_],
-                                        data=new_train_data_dict[node_],
-                                        y_idx=y_idx,
-                                        time_limit=time_limit,
-                                        log_to_console=False,
-                                        criterion=criterion)
-            main_model = train_model_pulp(model_dict=main_model,
+            # Create a local-to-global map to be saved in the model's details
+            local_to_global_sub = dict(zip(local_P_sub, subset_features_global))
+            
+            # --- Model generation & training with the new feature subset ---
+            main_model = generate_model_tree(P=local_P_sub,
+                                             K=sub_K[node_],
+                                             data=new_train_data_dict[node_],
+                                             y_idx=y_idx,
+                                             time_limit=time_limit,
+                                             log_to_console=False,
+                                             criterion=criterion)
+            
+            main_model = train_model(model_dict=main_model,
                                      data=new_train_data_dict[node_],
-                                     P=features)
+                                     P=local_P_sub)
             
-            #Applies the trained sub-model to the sub-dataset
+            # Applies the trained sub-model to the sub-dataset
             result_ = predict_model_pulp(
                 data=new_train_data_dict[node_],
                 model_dict=main_model,
-                P=features)
+                P=local_P_sub)
+            
             # Determines which leaves remain misclassified
             misclassified_leafs = find_misclassification(df=result_)
             del result_
 
-            #Update model’s splitting rules
-            #Realigns the parent-node feature variables (var_a) with the new indices in the expanded tree.
+            # Update model’s splitting rules
             temp_dict = {}
             for t in predefined_model["nodes"]["parent_nodes"]:
                 new_idx = parent_pattern(sub_leaf=t,
                                          leaf_node=node_)
-                temp_dict[new_idx] = main_model[
-                    "details"]["var_a"][t]
+                temp_dict[new_idx] = main_model["details"]["var_a"][t]
+
             main_model["details"]["var_a"] = temp_dict
 
-
             # Update target-class assignments
-            # Each child leaf gets assigned a class.
-            # If misclassified => it’s marked for further splitting (to_go_deep_nodes_)
-            # If correct => it’s added to list of pruned/terminal nodes.
             temp_target = {}
             for t in predefined_model["nodes"]["leaf_nodes"]:
                 new_idx = leaf_pattern(sub_leaf=t, depth=main_depth,
                                        leaf=node_)
                 if t in main_model["details"]["target_class"]:
-                    # less than 3 data points results with error
-                    temp_target[new_idx] = \
-                        main_model["details"]["target_class"][t]
+                    temp_target[new_idx] = main_model["details"]["target_class"][t]
                     if t in misclassified_leafs:
                         to_go_deep_nodes_[new_idx] = t
                     else:
                         pruned_nodes.append(new_idx)
 
             temp_class_assign = copy.deepcopy(pruned_nodes)
-
-            # Reorganize pruned nodes
-            # Ensures pruning is consistent: if a child is misclassified, its parent cannot stay pruned.
             for i in temp_class_assign:
                 for parent in parents_to_optimize:
-                    if not (i != parent * 2 and i != (
-                            parent * 2 +
-                            1)):
+                    if not (i != parent * 2 and i != (parent * 2 + 1)):
                         pruned_nodes.remove(i)
                     if not (i != get_child(1, 2, parent) * 2 or i != (
-                            get_child(1, 2, parent) * 2 +
-                            1)):
+                            get_child(1, 2, parent) * 2 + 1)):
                         pruned_nodes.remove(i)
-            new_train_data_dict[node_] = new_train_data_dict[node_].drop(
-                ["prediction",
-                 "leaf"],
-                axis=1)
             
-
-            #Finalize bookkeeping
-            #Drop unnecessary columns (prediction, leaf).
-            # Update global tracking:
-            # This “merges” the local sub-model into the global final model by updating:
-            # - splitting variables (var_a)
-            # - selected features per node
-            # - target class assignments
-
+            new_train_data_dict[node_] = new_train_data_dict[node_].drop(
+                ["prediction", "leaf"], axis=1)
+            
             main_model["details"]["target_class"] = temp_target
-            selected_features[node_] = copy.deepcopy(
-                main_model["details"][
-                    "selected_features"])
-            final_model["details"]["var_a"].update(
-                main_model["details"]["var_a"])
+            
+            # The selected_features dict should store a mapping from local node to the global feature ID
+            selected_features[node_] = {
+                1: local_to_global_sub[main_model["details"]["selected_features"][1]],
+                2: local_to_global_sub[main_model["details"]["selected_features"][2]],
+                3: local_to_global_sub[main_model["details"]["selected_features"][3]]
+            }
+            
+            final_model["details"]["var_a"].update(main_model["details"]["var_a"])
             for k in [node_ * 2, node_ * 2 + 1]:
                 if k in final_model["details"]["target_class"]:
                     final_model["details"]["target_class"].pop(k)
-            final_model["details"]["target_class"].update(
-                main_model["details"]["target_class"])
+            final_model["details"]["target_class"].update(main_model["details"]["target_class"])
 
-        
-        
         result_dict['tree'][current_depth] = {}
         result_dict['tree'][current_depth]['trained_dict'] = final_model
+
+        print('final model reached')
         
-        ####### hier ist drin wie die train daten im aktuellen Teilbaum performen; dict in predict_model_pulp)
+        # P for predict_model_pulp needs to be the list of all features used
+        # in the tree so far. We must collect them.
+        all_features_so_far = []
+        for sf_dict in selected_features.values():
+            all_features_so_far.extend(list(sf_dict.values()))
+        all_features_so_far = list(set(all_features_so_far))
         
-        final_model["depth"] = main_depth + level
+        final_model['details']['all_features'] = all_features_so_far
+        
         result_training_data = predict_model_pulp(data=train_data,
                                 model_dict=final_model,
-                                P=features,
+                                P=final_model['details']['all_features'],
                                 pruned_nodes=pruned_nodes)
-        #######################
         
-        result_dict['tree'][current_depth]['train'] = result_training_data[['y', 'prediction', 'leaf']] #adding dict to save classification for every level
-        
+        result_dict['tree'][current_depth]['train'] = result_training_data[['y', 'prediction', 'leaf']]
 
+        train_acc = len(result_training_data.loc[result_training_data["prediction"]
+                        == result_training_data["y"]]) / len(result_training_data["y"])
 
-        train_acc = len(
-            result_training_data.loc[result_training_data["prediction"]
-                        == result_training_data["y"]]) / \
-                    len(result_training_data["y"])
-        #del result_training_data
-
-        ####### hier ist drin wie die test daten im aktuellen Teilbaum performen; dict in predict_model_pulp)
         result_test_data = predict_model_pulp(data=test_data,
                                model_dict=final_model,
-                               P=features,
+                               P=final_model['details']['all_features'],
                                pruned_nodes=pruned_nodes)
         
-        ################################################
-
         result_dict['tree'][current_depth]['test'] = result_test_data[['y', 'prediction', 'leaf']]
         
-        prediction_acc = len(
-            result_test_data.loc[result_test_data["prediction"]
-                       == result_test_data["y"]]) / \
-                         len(result_test_data["y"])
+        prediction_acc = len(result_test_data.loc[result_test_data["prediction"]
+                       == result_test_data["y"]]) / len(result_test_data["y"])
+                       
         logging.info(
             f"Test Accuracy: {prediction_acc}. Training Accuracy: "
             f"{train_acc}. Iteration is over for level"
@@ -250,7 +232,6 @@ def rolling_optimize(predefined_model: Optional[dict],
             "training_accuracy": train_acc,
             "test_accuracy": prediction_acc,
             "time": time.time() - iter_time
-
         }
     return result_dict
 
