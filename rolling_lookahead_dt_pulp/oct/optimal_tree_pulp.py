@@ -79,7 +79,7 @@ def generate_model_pulp(
         for k in P:
             y[i, k] = LpVariable(f'y[{i},{k}]', cat='Binary')
 
-#lpSum is to gulps what quicksum is to gurobi
+#lpSum is to pulp what quicksum is to gurobi
 
     # Constraint 1: Exactly one (i,j) pair is selected
     model += lpSum(x[i,j] for i in P for j in P) == 1, "C1b" # Ensures that exactly one combination of features (i, j) is selected for the first two splits (criteria (1b))
