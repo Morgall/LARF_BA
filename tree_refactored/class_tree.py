@@ -107,6 +107,7 @@ class DecisionTree_rollOCT:
         return self
 
     def predict(self, X):
+        check_is_fitted(self, 'is_fitted_')
         
         """
         Predict values for a set of inputs
