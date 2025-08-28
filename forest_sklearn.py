@@ -104,7 +104,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             targets_train = targets.iloc[train_idx]
             targets_test = targets.iloc[test_idx]
 
-            start_time = time.time
+            start_time = time.time()
             forest = RandomForestClassifier(n_estimators=n_estimators, max_depth=depth_tree, max_features = 'sqrt', bootstrap=True)
             forest.fit(features_train, targets_train)
             
@@ -123,7 +123,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
                 'prediction': r_train
             })
             
-            end_time = time.time
+            end_time = time.time()
 
             with open(f'{dir_path}/fold{i}/fold{i}_time_{dataset_name}_run{run+1}.txt', 'a') as f:
                 f.write(str(end_time - start_time))
