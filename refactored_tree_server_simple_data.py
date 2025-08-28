@@ -118,10 +118,10 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         with open(f'{dir_path}/fold{i}/{dataset_name}_result_train.csv', 'w') as f:
             f.write(str(result_train.to_csv()))
 
-        os.makedirs(f'refactored_tree_pickle/cvals_tree/{dataset_name}', exist_ok=True)
+        #os.makedirs(f'refactored_tree_pickle/cvals_tree/{dataset_name}', exist_ok=True)
 
-        with open(f'refactored_tree_pickle/cvals_tree/{dataset_name}/fold{i}_tree_class.pkl', 'wb') as f: # 'wb' for write binary, rb for read binary
-                pickle.dump(tree, f)
+        #with open(f'refactored_tree_pickle/cvals_tree/{dataset_name}/fold{i}_tree_class.pkl', 'wb') as f: # 'wb' for write binary, rb for read binary
+                #pickle.dump(tree, f)
         
         i+=1
 
