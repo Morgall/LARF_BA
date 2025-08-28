@@ -44,12 +44,19 @@ class DecisionTree_rollOCT:
         print(f'Training each tree split on {amount_features_train} features of all {n_features} features')
 
         while (current_depth < self.max_depth) and (not(queue.empty())):
+            
+            
             # Select a node from the queue with the lowest depth; should always be node mit lowest number (BFS)
             print('\n' + "-" * 40)
             print(f"\nqueue empty: {queue.empty()}")
 
             root_node_subtree = queue.get()
             print(f'\nWorking on node number {root_node_subtree.number} with depth {root_node_subtree.depth}')
+
+            current_depth = root_node_subtree.depth
+            if current_depth+2 > self.max_depth:
+                print("\n tree getting to deep ... stopping the building")
+                break
 
             #print(list(queue.queue))
 
@@ -95,8 +102,9 @@ class DecisionTree_rollOCT:
 
 
             # Set current_depth equal to 1 plus the smallest depth of the nodes in the set S
-            current_depth = queue.queue[0].depth +1 #not thread safe, crashes at depth 21-22
-            print(f"new depth {current_depth}")
+            #current_depth = queue.queue[0].depth +1 #not thread safe, crashes at depth 21-22
+            
+            print(f"new depth of tree {current_depth+2}")
             
             
             #break
