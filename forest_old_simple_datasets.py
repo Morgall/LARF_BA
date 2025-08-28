@@ -119,7 +119,7 @@ if __name__ == "__main__":
             i+=1
     
     end_time_run = time.time()
-    with open(f'total_runtime_all_datasets.txt', 'w') as f:
+    with open(f'total_runtime_all_datasets_old_forest.txt', 'w') as f:
         f.write(f"Total runtime: {end_time_run - start_time_run} seconds\n")
 
 
