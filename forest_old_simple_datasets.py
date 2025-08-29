@@ -11,7 +11,7 @@ if __name__ == "__main__":
     criterion_loss = "gini"
     #criterion_loss = "misclassification"
     folds_cross_val = 5
-    cores_to_use = 6
+    cores_to_use = 80
     number_of_estimators = 50
 
     to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
