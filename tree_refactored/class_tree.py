@@ -1,4 +1,3 @@
-from sklearn.utils.validation import check_is_fitted
 import time
 
 import numpy as np
@@ -17,13 +16,13 @@ import time
 # only gini index for now
 # must ensure data given to functions has correct binary format; consult makeReady_datasets.ipynb and example
 class DecisionTree_rollOCT:
-    def __init__(self, max_depth=None, max_features = None, reuse_features = True):
+    def __init__(self, max_depth=None, max_features = None, random_state = None):
         self.max_depth = max_depth
         self.root = None                    # node representing final tree
         self.max_features = max_features
         self.is_fitted_=False
-        self.fit_time = None                # time needed to fit tree with depth max_depth
-        self.reuse_features = True
+        self.fit_time = None    
+        self.random_state = random_state            # time needed to fit tree with depth max_depth
 
     def fit(self, X, y):
         
@@ -77,7 +76,7 @@ class DecisionTree_rollOCT:
             """
 
             X_list = [int(col) for col in X.columns] #col names must be int or 'int'
-            rng = np.random.RandomState(None) # could maybe use self.random_state
+            rng = np.random.RandomState(self.random_state) # could maybe use self.random_state
             subset_features_list = rng.choice(X_list, size=amount_features_train, replace=False) #subset features to train on
             subset_features_list = sorted(subset_features_list) #maybe not necessary
             subset_features_list_str = [str(x) for x in subset_features_list]

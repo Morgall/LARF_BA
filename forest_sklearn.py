@@ -105,7 +105,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             targets_test = targets.iloc[test_idx]
 
             start_time = time.time()
-            forest = RandomForestClassifier(n_estimators=n_estimators, max_depth=depth_tree, max_features = 'sqrt', bootstrap=True)
+            forest = RandomForestClassifier(n_estimators=n_estimators, max_depth=depth_tree,random_state = 42, max_features = 'sqrt', bootstrap=True)
             forest.fit(features_train, targets_train)
             
             r_test = forest.predict(features_test)
