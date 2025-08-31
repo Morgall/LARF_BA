@@ -8,27 +8,29 @@ def distribute_data_to_children(root_node : TreeNode):
     remainder of code should run regardless and "distribute" the nonexistend data
     get_predict_and_pure() handles that empty nodes inherit the prediction from parent
     """
+
+    #print("Node", root_node.number, "Incoming data:")
+    #print(root_node.datapoints_in_node)
+
     if root_node.is_pure == True:
         print(f"\nDistributing to children from pure node {root_node.number}...")
 
-    left_child = root_node.left
-    left_child.datapoints_in_node = pd.DataFrame()
-    right_child = root_node.right
-    right_child.datapoints_in_node = pd.DataFrame()
+    data_left = pd.DataFrame()
+    data_right = pd.DataFrame()
 
-    for index, row in root_node.datapoints_in_node.iterrows(): #row is a dataframe series, not a dataframe, if root_node.datapoints_in_node is an empty DataFrame (no rows), the loop simply does not execute any iterations
-        if row[root_node.feature] == 0:
-            left_child.datapoints_in_node = pd.concat([left_child.datapoints_in_node, row.to_frame().T], ignore_index=False)
-        else:
-            right_child.datapoints_in_node = pd.concat([right_child.datapoints_in_node, row.to_frame().T], ignore_index=False)
+    data_left = root_node.datapoints_in_node[root_node.datapoints_in_node.iloc[:, root_node.feature] == 0].copy()
+    data_right = root_node.datapoints_in_node[root_node.datapoints_in_node.iloc[:, root_node.feature] != 0].copy()
             
-    if len(root_node.datapoints_in_node) != ((len(left_child.datapoints_in_node) + len(right_child.datapoints_in_node))):
+    if len(root_node.datapoints_in_node) != ((len(data_left) + len(data_right))):
         raise Exception(f"for some reason node {root_node.number} wasnt emptied correctly")
+    
     
     else: # data is needed for tree building
         #del root_node.datapoints_in_node
         #root_node.datapoints_in_node = None
-        return
+        #print(f'\nfeatures node {2*root_node.number +1} {data_left}')
+        #print(f'\nfeatures node {2*root_node.number +2} {data_right}')
+        return data_left , data_right
 
 def get_predict_and_pure(node : TreeNode):
     if node.datapoints_in_node.empty:
