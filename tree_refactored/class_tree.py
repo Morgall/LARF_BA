@@ -204,7 +204,7 @@ class DecisionTree_rollOCT:
             X.loc[index, 'prediction'] = node.prediction
 
         
-        return X
+        return X['prediction']
             
 
         
