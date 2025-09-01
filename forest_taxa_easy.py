@@ -34,14 +34,14 @@ if __name__ == "__main__":
     
     for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
-        dir_path = f'microbiome_data/taxa_easy/refactored_random_forest/n{n_estimator}_d{depth_tree}_{sub_name}'
-
         features = data.drop(columns=['y'])
         targets = data['y']
 
         skf = StratifiedKFold(n_splits=folds_cross_val, shuffle=True, random_state=42)
 
         for n_estimator in n_estimator_list:
+
+            dir_path = f'microbiome_data/taxa_easy/refactored_random_forest/n{n_estimator}_d{depth_tree}_{sub_name}'
 
             for run in range(5): #account for randomness boostrapping and subfeature selection
 
@@ -100,14 +100,14 @@ if __name__ == "__main__":
     
     for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
-        dir_path = f'microbiome_data/taxa_easy/sklearn_random_forest/n{n_estimator}_d{depth_tree}_{sub_name}'
-
         features = data.drop(columns=['y'])
         targets = data['y']
 
         skf = StratifiedKFold(n_splits=folds_cross_val, shuffle=True, random_state=42)
 
         for n_estimator in n_estimator_list:
+
+            dir_path = f'microbiome_data/taxa_easy/sklearn_random_forest/n{n_estimator}_d{depth_tree}_{sub_name}'
 
             for run in range(5): #account for randomness boostrapping and subfeature selection
 
