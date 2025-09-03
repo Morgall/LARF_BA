@@ -26,10 +26,8 @@ if __name__ == "__main__":
     data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
     to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
 
-    # -------------------------CART-----------------------------------
-
+    # -------------------------rollOCT-----------------------------------
  
-    
     start_time_run_all_rollOCTforest = time.time()
     
     for dataset_name, data in to_do_dict.items(): #.items() gives key, values
