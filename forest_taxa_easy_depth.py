@@ -8,7 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 if __name__ == "__main__":
 
     target_label = "y"
-    depth_tree_list = [10]
+    depth_tree_list = [12]
     criterion_loss = "gini"
     #criterion_loss = "misclassification"
     folds_cross_val = 5
