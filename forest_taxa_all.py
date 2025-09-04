@@ -54,7 +54,7 @@ if __name__ == "__main__":
                 pass  # This just creates/truncates the file
 
             start_time_forest = time.time()
-            forest = RandomForestClassifier(n_estimators=n_estimator, random_state=None, cores_to_use=cores_to_use, max_depth=depth_tree, max_features=sub_features)
+            forest = CustomForestClassifier(n_estimators=n_estimator, random_state=None, cores_to_use=cores_to_use, max_depth=depth_tree, max_features=sub_features)
             
             forest.fit(X_train, y_train)
             y_pred = forest.predict(X_test)
@@ -96,7 +96,7 @@ if __name__ == "__main__":
                 pass  # This just creates/truncates the file
 
             start_time_forest = time.time()
-            forest = CustomForestClassifier(n_estimators=n_estimator, random_state=None, max_depth=depth_tree, max_features=sub_features, bootstrap=True)
+            forest = RandomForestClassifier(n_estimators=n_estimator, random_state=None, max_depth=depth_tree, max_features=sub_features, bootstrap=True)
             
             forest.fit(X_train, y_train)
             y_pred = forest.predict(X_test)
