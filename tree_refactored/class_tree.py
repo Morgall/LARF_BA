@@ -227,8 +227,6 @@ class DecisionTree_rollOCT:
             k = max(1, int(math.log2(n_features)))
         elif self.max_features is None:
             k = n_features
-            if self.reuse_features:
-                self.reuse_features = True
         else:
             raise ValueError(f"Invalid max_features value: {self.max_features}")
         return k
