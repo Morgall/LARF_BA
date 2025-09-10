@@ -75,6 +75,7 @@ class CustomForestClassifier:
         all_preds = pd.DataFrame()
         for tree in self.trees_:
             pred = tree.predict(X)
+            pred.drop('leaf', axis=1)
             pred  = pred.astype(int)
             all_preds = pd.concat([all_preds, pred], axis=1)
         # row-wise majority vote (handle multiple modes by picking first)
