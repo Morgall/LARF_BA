@@ -1,0 +1,1 @@
+Tree execution time depth 8 : 0.9550919532775879 seconds
