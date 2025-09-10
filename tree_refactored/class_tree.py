@@ -63,8 +63,6 @@ class DecisionTree_rollOCT:
                 print("\n tree getting to deep ... stopping the building")
                 break
 
-            #print(list(queue.queue))
-
             """
             X_list = [int(col) for col in features_to_use.columns] #col names must be int or 'int'
             rng = np.random.RandomState(None) # could maybe use self.random_state
@@ -81,11 +79,9 @@ class DecisionTree_rollOCT:
             subset_features_list = sorted(subset_features_list) #maybe not necessary
             subset_features_list_str = [str(x) for x in subset_features_list]
 
-            #subset_features = X[subset_features_list_str]
             subset_features = root_node_subtree.datapoints_in_node[subset_features_list_str] #does not change the features in the node
             print(f"Subset features rows {subset_features.shape[0]}")
 
-            #targets = node.datapoints_in_node['y'] #target col of datapoints still in node; df series
             targets = root_node_subtree.datapoints_in_node[['y']] #gives true dataframe
             #print(targets)
             print(f"targets rows {subset_features.shape[0]}")
@@ -125,15 +121,14 @@ class DecisionTree_rollOCT:
 
             print("\nFinding features for subtree")
             root_feature, node1_feature, node2_feature = solve_features_subtree(P=P, K=K, data=train, y_idx=0, big_m=99)
-            #root_feature, node1_feature, node2_feature = solve_features_subtree_vectorized(subset_features, targets)
 
             root_feature = int(lookup_dict[root_feature])
             node1_feature = int(lookup_dict[node1_feature])
             node2_feature = int(lookup_dict[node2_feature])
             print("\nSelected features subtree:")
             print(f"Root Node Feature: {root_feature}")
-            print(f"No (0) instance child feature: {node1_feature}")
-            print(f"Yes (1) instance child feature: {node2_feature}")
+            print(f"Left Yes (1) instance child feature: {node1_feature}")
+            print(f"Right No (0) instance child feature: {node2_feature}")
 
             """
             create tree with correct numbering of nodes and pass data through tree according to selcted features
@@ -152,23 +147,8 @@ class DecisionTree_rollOCT:
                 queue.put(node)
 
 
-            # Set current_depth equal to 1 plus the smallest depth of the nodes in the set S
-            #current_depth = queue.queue[0].depth +1 #not thread safe, crashes at depth 21-22
-            
             print(f"new depth of tree {current_depth+2}")
 
-            """ currenctly not in use
-            if not(self.reuse_features):
-                #features_to_use = features_to_use.drop(columns=f'{root_feature}')
-                del features_to_use[f'{root_feature}']
-                if (amount_features_train -1) <= len(features_to_use):
-                    amount_features_train -= 1
-                else:
-                    print('\nsubset of features to small to select from ... exiting')
-                    break
-                """
-            
-            #break
 
         time_end = time.time()
         self.fit_time = time_end - time_start
@@ -184,6 +164,7 @@ class DecisionTree_rollOCT:
         """
 
         X['prediction'] = None
+        X['leaf'] = None
         #print(X['15'])
         for index, row in X.iterrows():
             #print(row)
@@ -193,28 +174,42 @@ class DecisionTree_rollOCT:
                 #print(f'node left child {node.left.number}; node right child {node.right.number}')
                 #print(f'node left child is leaf {node.left.is_leaf}; node right child is leaf {node.right.is_leaf}')
                 if (row[str(node.feature)]) == 0:
-                    node = node.left
-                elif (row[str(node.feature)]) == 1:
                     node = node.right
+                elif (row[str(node.feature)]) == 1:
+                    node = node.left
                 #else:
                     #print(f"\nProblem at current node {node.number} with feature {node.feature}")
 
             #print(f"Leaf number {node.number} found; prediction is {node.prediction}")
             X.loc[index, 'prediction'] = node.prediction
+            X.loc[index, 'leaf'] = node.number
+
+            results = pd.DataFrame({
+                    'prediction': X['prediction'].copy(),
+                    'leaf' : X['leaf'].copy()
+            })
 
         
-        return X['prediction']
-            
+        return results
+    
+    def traverse_tree(self, node):
+        queue = Queue(maxsize=0)
+        if node != None:
+            queue.put(node)
+        else:
+            return None
+        while (not(queue.empty())):
+            number_left = None
+            number_right = None
+            node = queue.get()
+            if (node.left != None):
+                queue.put(node.left)
+                number_left = node.left.number
+            if (node.right != None):
+                queue.put(node.right)
+                number_right = node.right.number
+            print(f"\nNode {node.number}\n\tis_leaf: {node.is_leaf}\n\tleft child {number_left}\n\tright child {number_right}")
 
-        
-
-
-
-
-
-
-        # remember to implement check if all datapoints where found again; after collecting datapoints over all leafes!
-        pass
 
     def _get_feature_subset(self, n_features):
         if isinstance(self.max_features, int):
@@ -236,8 +231,8 @@ class DecisionTree_rollOCT:
         root_node.feature = root_feature
         
         # nodes 1 and 2
-        left_child = TreeNode(feature=node1_feature, number=2*root_node.number+1, parent = root_node, depth = root_node.depth+1) #No (0) instance
-        right_child = TreeNode(feature=node2_feature, number=2*root_node.number+2, parent = root_node, depth = root_node.depth+1) #Yes (1) instance
+        left_child = TreeNode(feature=node1_feature, number=2*root_node.number+1, parent = root_node, depth = root_node.depth+1) #Yes (1) instance
+        right_child = TreeNode(feature=node2_feature, number=2*root_node.number+2, parent = root_node, depth = root_node.depth+1) #No (0) instance
         root_node.left = left_child
         root_node.right = right_child
 
@@ -293,4 +288,3 @@ class DecisionTree_rollOCT:
         
 
         return subtree, parents_impure_list
-    

@@ -18,18 +18,14 @@ def distribute_data_to_children(root_node : TreeNode):
     data_left = pd.DataFrame()
     data_right = pd.DataFrame()
 
-    data_left = root_node.datapoints_in_node[root_node.datapoints_in_node.iloc[:, root_node.feature] == 0].copy()
-    data_right = root_node.datapoints_in_node[root_node.datapoints_in_node.iloc[:, root_node.feature] != 0].copy()
+    data_right = root_node.datapoints_in_node[root_node.datapoints_in_node.iloc[:, root_node.feature] == 0].copy()
+    data_left = root_node.datapoints_in_node[root_node.datapoints_in_node.iloc[:, root_node.feature] == 1].copy()
             
     if len(root_node.datapoints_in_node) != ((len(data_left) + len(data_right))):
         raise Exception(f"for some reason node {root_node.number} wasnt emptied correctly")
     
     
     else: # data is needed for tree building
-        #del root_node.datapoints_in_node
-        #root_node.datapoints_in_node = None
-        #print(f'\nfeatures node {2*root_node.number +1} {data_left}')
-        #print(f'\nfeatures node {2*root_node.number +2} {data_right}')
         return data_left , data_right
 
 def get_predict_and_pure(node : TreeNode):
