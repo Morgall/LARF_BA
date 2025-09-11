@@ -13,7 +13,7 @@ if __name__ == "__main__":
     #criterion_loss = "misclassification"
     folds_cross_val = 5
     cores_to_use = 80
-    n_estimator_list = [800, 1000]
+    n_estimator_list = [50, 100, 200, 500, 600, 800, 1000]
     sub_features = 'sqrt'
     if sub_features == None:
         sub_name = 'None'
