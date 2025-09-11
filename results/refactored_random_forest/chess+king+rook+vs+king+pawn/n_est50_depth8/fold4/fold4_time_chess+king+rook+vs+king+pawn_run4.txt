@@ -1,1 +1,1 @@
-Forest execution time for 50 estimators with depth 8 : 30.762607097625732 seconds
+Forest execution time for 50 estimators with depth 8 : 40.12468767166138 seconds
