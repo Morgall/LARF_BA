@@ -284,7 +284,13 @@ class DecisionTree_rollOCT:
         if (node5.is_pure == False and node5.is_empty == False)  or (node6.is_pure == False and node6.is_empty == False):
             parents_impure_list.append(right_child)
 
-        
+        if(node3.is_pure == True and node4.is_pure == True):
+            del left_child.datapoints_in_node
+            left_child.datapoints_in_node = None
+
+        if(node5.is_pure == True and node6.is_pure == True):
+            del right_child.datapoints_in_node
+            right_child.datapoints_in_node = None
         
 
         return subtree, parents_impure_list

@@ -1,7 +1,13 @@
 from tree_refactored.class_node import TreeNode
 import pandas as pd
+import gc
 
 def distribute_data_to_children(root_node : TreeNode):
+    
+    if root_node.parent != None:
+        del root_node.parent.datapoints_in_node
+        root_node.parent.datapoints_in_node = None
+        #gc.collect()
     
     """
     edgecase; split feature was perfect. 
