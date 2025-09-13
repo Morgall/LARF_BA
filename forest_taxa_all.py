@@ -21,7 +21,7 @@ if __name__ == "__main__":
     depth_tree = 5
     criterion_loss = "gini"
     #criterion_loss = "misclassification"
-    cores_to_use = 30
+    cores_to_use = 10
     n_estimator = 500
     sub_features = 'sqrt'
     if sub_features == None:
