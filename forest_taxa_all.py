@@ -4,6 +4,16 @@ import time
 import os
 from sklearn.model_selection import LeaveOneGroupOut
 from sklearn.ensemble import RandomForestClassifier
+from memory_profiler import memory_usage
+
+def monitor_memory(func, args, interval=2, dir_path=None, test_cohort = None, run = 1):
+    # Record memory usage samples while running func with args
+    mem_usage = memory_usage((func, args), interval=interval, include_children=True, multiprocess=True)
+    # Append samples to the given file
+    with open(f'{dir_path}/test_{test_cohort}/fit_memory_run{run+1}.txt', 'a') as f:
+        for usage in mem_usage:
+            f.write(f"{usage}\n")
+
 
 if __name__ == "__main__":
 
@@ -11,7 +21,7 @@ if __name__ == "__main__":
     depth_tree = 5
     criterion_loss = "gini"
     #criterion_loss = "misclassification"
-    cores_to_use = 80
+    cores_to_use = 30
     n_estimator = 500
     sub_features = 'sqrt'
     if sub_features == None:
@@ -53,10 +63,14 @@ if __name__ == "__main__":
             with open(f'{dir_path}/test_{test_cohort}/time_run{run+1}.txt', 'w') as f:
                 pass  # This just creates/truncates the file
 
+            with open(f'{dir_path}/test_{test_cohort}/fit_memory_run{run+1}.txt', 'w') as f:
+                pass  # This just creates/truncates the file
+
             start_time_forest = time.time()
             forest = CustomForestClassifier(n_estimators=n_estimator, random_state=None, cores_to_use=cores_to_use, max_depth=depth_tree, max_features=sub_features)
             
-            forest.fit(X_train, y_train)
+            #forest.fit(X_train, y_train)
+            monitor_memory(forest.fit, (X_train, y_train), interval=2, dir_path=dir_path, test_cohort = test_cohort, run = run)
             y_pred = forest.predict(X_test)
             result_test = pd.DataFrame({
                 'y': y_test,
