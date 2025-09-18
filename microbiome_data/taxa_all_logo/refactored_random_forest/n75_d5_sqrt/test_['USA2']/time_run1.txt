@@ -1,0 +1,1 @@
+Forest execution time for 75 estimators with depth 5 : 70.06998085975647 seconds
