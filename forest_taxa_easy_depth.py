@@ -8,23 +8,19 @@ from sklearn.ensemble import RandomForestClassifier
 if __name__ == "__main__":
 
     target_label = "y"
-    depth_tree_list = [4,5,6,10,12]
+    depth_tree = 8
     criterion_loss = "gini"
     #criterion_loss = "misclassification"
-    folds_cross_val = 5
-    cores_to_use = 80
-    n_estimators = 500
-    sub_features = 'sqrt'
-    if sub_features == None:
-        sub_name = 'None'
-    else:
-        sub_name = sub_features
+    folds_cross_val = 10
+    sub_features_percentage_list = [0.25, 0.5, 0.75]
 
     to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
 
     data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
     to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
+
+    for sub_size in sub_features_percentage_list:
 
     # -------------------------rollOCT-----------------------------------
  
