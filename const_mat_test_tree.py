@@ -44,7 +44,8 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
     for perc in subset_size_list:
 
         subset_int = int(perc * num_columns)
-        subset = features.sample(n=subset_int, axis=1, random_state=42) #subset of features the tree is to be trained on
+        #subset = features.sample(n=subset_int, axis=1, random_state=42) #subset of features the tree is to be trained on; TREE NEEDS FEATURES TO BE int 1, ...,n
+        subset = features.iloc[:, :subset_int]  # selects columns from 0 up to n-1
 
         X = subset
         y = targets
