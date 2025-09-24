@@ -62,10 +62,10 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         tree = DecisionTree_rollOCT(max_depth=depth_rolling_tree, max_features = None)
         tree.fit(X_train, y_train)
         
-        r_test = tree.predict(y_test)
+        r_test = tree.predict(X_test)
         result_test = pd.concat([y_test, r_test['prediction']], axis=1)
 
-        r_train = tree.predict(y_train)
+        r_train = tree.predict(X_train)
         result_train = pd.concat([y_train, r_train['prediction']], axis=1)
 
         with open(f'{dir_path}/time.txt', 'a') as f:
