@@ -24,7 +24,7 @@ target_label = "y"
 depth_rolling_tree = 2
 criterion_loss = "gini"
 
-subset_size_list = [0.1, 0.25, 0.5, 0.75] # percentages
+subset_size_list = [0.9, 1] # percentages
 
 #folds_cross_val = 10
 
