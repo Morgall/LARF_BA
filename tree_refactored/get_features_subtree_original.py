@@ -3,7 +3,7 @@ import pandas as pd
 from pulp import *
 import copy
 
-# taken from original
+# adapted from original
 def preprocess_dataframes(train_df: pd.DataFrame, target_label: str, features: list):
     """
     Rearranges the DataFrames such that the target label becomes the first column,
@@ -77,12 +77,12 @@ def calculate_gini_modified(data: pd.DataFrame,
     for leaf_ in nodes["leaf_nodes"]:
         temp = dict() # store Gini values for this leaf
         first_var = nodes["leaf_nodes_path"][leaf_][0] #{'leaf_nodes': [4, 5, 6, 7], 'leaf_nodes_path': {4: [1, 1], 5: [1, 0], 6: [0, 1], 7: [0, 0]}}
-        second_var = nodes["leaf_nodes_path"][leaf_][1] #first_var, second_var — the first two values in the path to this leaf (used as feature values for filtering)
+        second_var = nodes["leaf_nodes_path"][leaf_][1] #first_var, second_var - the first two values in the path to this leaf (used as feature values for filtering)
         for feature_i in P:
-            arr = df_arr[np.where((df_arr[:, feature_i] == first_var))] #Selects rows where feature feature_i equals first_var
+            arr = df_arr[np.where((df_arr[:, feature_i] == first_var))] #Selects rows where feature_i equals first_var
 
             for feature_j in P:
-                arr_2 = arr[np.where(arr[:, feature_j] == second_var)] #Further filters to rows where feature feature_j equals second_var
+                arr_2 = arr[np.where(arr[:, feature_j] == second_var)] #Further filters to rows where feature_j equals second_var
                 if len(arr_2) > 0: #Calculate Gini index for arr_2 (so for all rows matching (1, 0; having/not having feature i) the decision variables)
                     temp[feature_i, feature_j] = gini_index(arr=arr_2,
                                                             instance_size=n,
@@ -105,6 +105,7 @@ def generate_nodes(depth: int) -> list:
     leaf_nodes = nodes[-2 ** depth:]
     return parent_nodes, leaf_nodes
 
+# adapted from original
 def solve_features_subtree(P: list, K: list, data: pd.DataFrame, y_idx: int = 0, big_m=99):
     
 
@@ -118,7 +119,7 @@ def solve_features_subtree(P: list, K: list, data: pd.DataFrame, y_idx: int = 0,
     P_filtered = variable_features
     """
 
-    leaf_nodes_path = {4: [1, 1], #dict for all leafes in depth 2 tree and der respective split conditions
+    leaf_nodes_path = {4: [1, 1], #dict for all leafes in depth 2 tree and the respective split conditions
                        5: [1, 0],
                        6: [0, 1],
                        7: [0, 0]}
