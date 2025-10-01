@@ -1,0 +1,13 @@
+adult & adult & 2 & 48841 & 14 & 118\
+wdbc & breast cancer wisconsin diagnostic & 2 & 569 & 31 & 120\
+car\_eval & car evaluation & 4 & 1728 & 6 & 21\
+mushroom & agaricus-lepiota & 2 & 8124 & 22 & 112\
+nursery & nursery & 5 & 12960 & 8 & 26\
+seismic & seismic & 2 & 2584 & 18 & 37\
+spambase & spambase & 2 & 4601 & 57 & 74\
+wine & wine & 3 & 178 & 13 & 52\
+banknote & banknote authentication & 2 & 1372 & 4 & 16\
+chess & chess king rook vs. king pawn & 2 & 3196 & 36 & 38\
+monk1 & monk1 & 2 & 555 & 6 & 15\
+monk2 & monk2 & 2 & 600 & 6 & 15\
+monk3 & monk3 & 2 & 553 & 6 & 15\
