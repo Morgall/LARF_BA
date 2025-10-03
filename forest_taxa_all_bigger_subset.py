@@ -57,7 +57,7 @@ if __name__ == "__main__":
             # Create the directory if it doesn't exist
             os.makedirs(f'{dir_path}/test_{test_cohort}', exist_ok=True)
 
-            for run in range(10): #account for randomness boostrapping and subfeature selection
+            for run in range(5): #account for randomness boostrapping and subfeature selection
 
                 with open(f'{dir_path}/test_{test_cohort}/time_run{run+1}.txt', 'w') as f:
                     pass  # This just creates/truncates the file
