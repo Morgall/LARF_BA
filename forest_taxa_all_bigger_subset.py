@@ -12,7 +12,7 @@ if __name__ == "__main__":
     depth_tree = 5
     criterion_loss = "gini"
     #criterion_loss = "misclassification"
-    cores_to_use = 50
+    cores_to_use = 80
     n_estimator = 500
     # try 0,05 first and reduce amount of cores to 50  accou8nting for additional preprocessing/constraint matrix ram use when increasing feature subset per split
     sub_feature_list = [0.05]  #[0.03, 0.05, 0.075] should amount to ca. 120, 200, 300 features for each split oppposed to ca. 66 using sqrt
