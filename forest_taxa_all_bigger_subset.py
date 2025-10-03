@@ -73,10 +73,10 @@ if __name__ == "__main__":
                     'prediction': y_pred
                 })
 
-                y_pred = forest.predict(X_train)
+                y_pred_train = forest.predict(X_train)
                 result_train = pd.DataFrame({
                     'y': y_train,
-                    'prediction': y_pred
+                    'prediction': y_pred_train
                 })
 
                 end_time_forest= time.time()
@@ -125,10 +125,10 @@ if __name__ == "__main__":
                 })
 
 
-                y_pred = forest.predict(X_train)
+                y_pred_train = forest.predict(X_train)
                 result_train = pd.DataFrame({
                     'y': y_train,
-                    'prediction': y_pred
+                    'prediction': y_pred_train
                 })
 
                 end_time_forest= time.time()
