@@ -15,6 +15,7 @@ if __name__ == "__main__":
     cores_to_use = 80
     n_estimator = 500
     # maybe try bigger subsets like 0,05 later  and reduce amount of cores to 50  accounting for additional preprocessing/constraint matrix ram use when increasing feature subset per split
+    # bin feature size of taxa_all is 3960
     sub_feature_list = [0.025]  #[0.025 ,0.03, 0.05, 0.075] should amount to ca. 100, 120, 200, 300 features for each split oppposed to ca. 66 using sqrt
     
     data = pd.read_csv("datasets/microbiome_taxa_counts_all/microbiome_taxa_counts_all_bin.csv")
