@@ -28,10 +28,10 @@ folds_cross_val = 10
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
 
-data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
-to_do_dict['test'] = data_test
+#data_test = pd.read_csv("datasets/example_datasets/stacked.csv")
+#to_do_dict['test'] = data_test
 
-"""
+
 data_breast_cancer = pd.read_csv("datasets/breast+cancer+wisconsin+diagnostic/wdbc_bin.csv")
 to_do_dict['breast+cancer+wisconsin+diagnostic'] = data_breast_cancer
 
@@ -71,9 +71,9 @@ to_do_dict['monk2'] = data_monk2
 data_monk3 = pd.read_csv("datasets/monk3/monk3_bin.csv")
 to_do_dict['monk3'] = data_monk3
 
-data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
-to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
-"""
+#data_microbiome_taxa_easy = pd.read_csv("datasets/microbiome_taxa_counts_easy/microbiome_taxa_counts_easy_bin.csv")
+#to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
+
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
@@ -105,16 +105,16 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         for depth in range(2, depth_tree+1):
             # Initialize the Decision Tree Classifier
             clf = DecisionTreeClassifier(criterion='gini', splitter='best', max_depth=depth, random_state=1)
-            start_time_cart = time.time()
+            start_time_cart = time.perf_counter()
             clf.fit(features_train, targets_train)
 
-            y_proba_test = clf.predict_proba(features_test)
+            """y_proba_test = clf.predict_proba(features_test)
             y_proba_test = pd.DataFrame(y_proba_test)
             y_proba_test.columns = clf.classes_
             print(y_proba_test)
             y_proba_train = clf.predict_proba(features_train)
             y_proba_train = pd.DataFrame(y_proba_train)
-            y_proba_train.columns = clf.classes_
+            y_proba_train.columns = clf.classes_"""
 
             y_pred_test = clf.predict(features_test)
             y_pred_train = clf.predict(features_train)
@@ -127,7 +127,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             df_train['y'] = targets_train
             df_train['prediction'] = y_pred_train
 
-            end_time_cart = time.time()
+            end_time_cart = time.perf_counter()
 
             #Create the directory if it doesn't exist
             os.makedirs(f'{dir_path}/cart/fold{i}/auroc_probs', exist_ok=True)
@@ -141,14 +141,14 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             #with open(f'{dir_path}/cart/fold{i}/auroc_probs/depth{depth}_{dataset_name}_auroc_probs_train.csv', 'a') as f:
                 #f.write(y_proba_train.to_csv())
 
-            with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'a') as f:
-                f.write(f"CART execution time for depth {depth} : {end_time_cart - start_time_cart} seconds\n")
+            with open(f'{dir_path}/cart/fold{i}/fold{i}_times_{dataset_name}.txt', 'w') as f:
+                f.write(f"{end_time_cart - start_time_cart}")
 
-            with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_test.csv', 'w') as f:
-                f.write(df_test.to_csv())
+            #with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_test.csv', 'w') as f:
+                #f.write(df_test.to_csv())
                 
-            with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_train.csv', 'w') as f:
-                f.write(df_train.to_csv())
+            #with open(f'{dir_path}/cart/fold{i}/depth{depth}_classification_{dataset_name}_train.csv', 'w') as f:
+                #f.write(df_train.to_csv())
         
         i+=1
 
