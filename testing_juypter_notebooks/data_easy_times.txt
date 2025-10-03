@@ -1,0 +1,14 @@
+&sklearn_time&orig_rollOCT_time&refac_rollOCT_time&speedup_factor
+adult&0.144&1427.873&1314.671&1.086
+breast+cancer+wisconsin+diagnostic&0.006&23.927&23.183&1.032
+car_evaluation&0.005&7.062&1.91&3.697
+mushroom&0.018&63.858&41.419&1.542
+nursery&0.013&49.953&7.006&7.13
+seismic&0.007&22.106&12.132&1.822
+spambase&0.01&72.53&53.891&1.346
+wine&0.004&2.58&2.039&1.265
+banknote+authentication&0.004&5.965&1.509&3.953
+chess+king+rook+vs+king+pawn&0.006&15.803&5.374&2.941
+monk1&0.005&1.744&0.245&7.118
+monk2&0.004&2.901&0.987&2.939
+monk3&0.004&2.35&0.824&2.852
