@@ -88,8 +88,8 @@ if __name__ == "__main__":
                 with open(f'{dir_path}/test_{test_cohort}/result_test_run{run+1}.csv', 'w') as f:
                     f.write(str(result_test.to_csv()))
 
-                with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
-                    f.write(str(result_train.to_csv()))
+                #with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
+                    #f.write(str(result_train.to_csv()))
                 
                 #del result_train
                 #del result_test
@@ -145,8 +145,8 @@ if __name__ == "__main__":
                 with open(f'{dir_path}/test_{test_cohort}/result_test_run{run+1}.csv', 'w') as f:
                     f.write(str(result_test.to_csv()))
 
-                with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
-                    f.write(str(result_train.to_csv()))
+                #with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
+                    #f.write(str(result_train.to_csv()))
 
 
 
