@@ -72,6 +72,12 @@ if __name__ == "__main__":
                     'prediction': y_pred
                 })
 
+                y_pred = forest.predict(X_train)
+                result_train = pd.DataFrame({
+                    'y': y_train,
+                    'prediction': y_pred
+                })
+
                 end_time_forest= time.time()
 
                 with open(f'{dir_path}/test_{test_cohort}/time_run{run+1}.txt', 'a') as f:
@@ -79,6 +85,9 @@ if __name__ == "__main__":
 
                 with open(f'{dir_path}/test_{test_cohort}/result_test_run{run+1}.csv', 'w') as f:
                     f.write(str(result_test.to_csv()))
+
+                with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
+                    f.write(str(result_train.to_csv()))
             
     #--------------------sklearn--------------------------
 
@@ -114,6 +123,13 @@ if __name__ == "__main__":
                     'prediction': y_pred
                 })
 
+
+                y_pred = forest.predict(X_train)
+                result_train = pd.DataFrame({
+                    'y': y_train,
+                    'prediction': y_pred
+                })
+
                 end_time_forest= time.time()
 
                 with open(f'{dir_path}/test_{test_cohort}/time_run{run+1}.txt', 'a') as f:
@@ -121,6 +137,9 @@ if __name__ == "__main__":
 
                 with open(f'{dir_path}/test_{test_cohort}/result_test_run{run+1}.csv', 'w') as f:
                     f.write(str(result_test.to_csv()))
+
+                with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
+                    f.write(str(result_train.to_csv()))
 
 
 
