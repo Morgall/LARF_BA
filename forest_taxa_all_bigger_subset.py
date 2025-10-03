@@ -5,6 +5,7 @@ import os
 from sklearn.model_selection import LeaveOneGroupOut
 from sklearn.ensemble import RandomForestClassifier
 from memory_profiler import memory_usage
+import gc
 
 if __name__ == "__main__":
 
@@ -73,11 +74,11 @@ if __name__ == "__main__":
                     'prediction': y_pred
                 })
 
-                """y_pred_train = forest.predict(X_train)
+                y_pred_train = forest.predict(X_train)
                 result_train = pd.DataFrame({
-                    'y': y_train,
+                    'y': y_pred_train,
                     'prediction': y_pred_train
-                })"""
+                })
 
                 end_time_forest= time.time()
 
@@ -87,8 +88,13 @@ if __name__ == "__main__":
                 with open(f'{dir_path}/test_{test_cohort}/result_test_run{run+1}.csv', 'w') as f:
                     f.write(str(result_test.to_csv()))
 
-                """with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
-                    f.write(str(result_train.to_csv()))"""
+                with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
+                    f.write(str(result_train.to_csv()))
+                
+                del result_train
+                del result_test
+                import gc
+                gc.collect()
             
     #--------------------sklearn--------------------------
 
@@ -125,11 +131,11 @@ if __name__ == "__main__":
                 })
 
 
-                """y_pred_train = forest.predict(X_train)
+                y_pred_train = forest.predict(X_train)
                 result_train = pd.DataFrame({
-                    'y': y_train,
+                    'y': y_pred_train,
                     'prediction': y_pred_train
-                })"""
+                })
 
                 end_time_forest= time.time()
 
@@ -139,8 +145,8 @@ if __name__ == "__main__":
                 with open(f'{dir_path}/test_{test_cohort}/result_test_run{run+1}.csv', 'w') as f:
                     f.write(str(result_test.to_csv()))
 
-                """with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
-                    f.write(str(result_train.to_csv()))"""
+                with open(f'{dir_path}/test_{test_cohort}/result_train_run{run+1}.csv', 'w') as f:
+                    f.write(str(result_train.to_csv()))
 
 
 
