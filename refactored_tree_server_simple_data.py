@@ -117,7 +117,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
         end_time_pulp = time.time()
 
-        with open(f'{dir_path}/fold{i}/fold{i}_time_{dataset_name}.txt.txt', 'a') as f:
+        with open(f'{dir_path}/fold{i}/fold{i}_time_{dataset_name}.txt', 'a') as f:
                 f.write(f"{end_time_pulp - start_time_pulp}")
 
         with open(f'{dir_path}/fold{i}/fold{i}_tree_fit_time_{dataset_name}.txt', 'a') as f:
