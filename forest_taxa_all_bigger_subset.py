@@ -17,7 +17,7 @@ if __name__ == "__main__":
     n_estimator = 500
     # maybe try bigger subsets like 0,05 later  and reduce amount of cores to 50  accounting for additional preprocessing/constraint matrix ram use when increasing feature subset per split
     # bin feature size of taxa_all is 3960
-    sub_feature_list = [0.025]  #[0.025 ,0.03, 0.05, 0.075] should amount to ca. 100, 120, 200, 300 features for each split oppposed to ca. 66 using sqrt
+    sub_feature_list = [0.03]  #[0.025 ,0.03, 0.05, 0.075] should amount to ca. 100, 120, 200, 300 features for each split oppposed to ca. 66 using sqrt
     
     data = pd.read_csv("datasets/microbiome_taxa_counts_all/microbiome_taxa_counts_all_bin.csv")
     dataset_name = 'microbiome_taxa_all'
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             # Create the directory if it doesn't exist
             os.makedirs(f'{dir_path}/test_{test_cohort}', exist_ok=True)
 
-            for run in range(5): #account for randomness boostrapping and subfeature selection
+            for run in range(10): #account for randomness boostrapping and subfeature selection
 
                 with open(f'{dir_path}/test_{test_cohort}/time_run{run+1}.txt', 'w') as f:
                     pass  # This just creates/truncates the file
@@ -115,7 +115,7 @@ if __name__ == "__main__":
             # Create the directory if it doesn't exist
             os.makedirs(f'{dir_path}/test_{test_cohort}', exist_ok=True)
 
-            for run in range(5): #account for randomness boostrapping and subfeature selection
+            for run in range(10): #account for randomness boostrapping and subfeature selection
 
                 with open(f'{dir_path}/test_{test_cohort}/time_run{run+1}.txt', 'w') as f:
                     pass  # This just creates/truncates the file
