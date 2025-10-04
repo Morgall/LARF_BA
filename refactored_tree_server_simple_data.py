@@ -3,6 +3,7 @@ from tree_refactored.class_tree import DecisionTree_rollOCT
 from sklearn.model_selection import StratifiedKFold
 import os
 import pickle
+import time
 
 """
 name_dataset_dict = {
@@ -92,6 +93,9 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         with open(f'{dir_path}/fold{i}/fold{i}_time_{dataset_name}.txt', 'w') as f:
             pass  # This just creates/truncates the file
 
+        with open(f'{dir_path}/fold{i}/fold{i}_tree_fit_time_{dataset_name}.txt', 'w') as f:
+            pass  # This just creates/truncates the file
+
         print(dataset_name)
         print(i)
         
@@ -99,6 +103,8 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         features_test = features.iloc[test_idx]
         targets_train = targets.iloc[train_idx]
         targets_test = targets.iloc[test_idx]
+
+        start_time_pulp = time.time()
 
         tree = DecisionTree_rollOCT(max_depth=depth_rolling_tree, max_features = None)
         tree.fit(features_train, targets_train)
@@ -109,7 +115,12 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
         r_train = tree.predict(features_train)
         result_train = pd.concat([targets_train, r_train['prediction']], axis=1)
 
-        with open(f'{dir_path}/fold{i}/fold{i}_time_{dataset_name}.txt', 'a') as f:
+        end_time_pulp = time.time()
+
+        with open(f'{dir_path}/pulp/fold{i}/fold{i}_time_{dataset_name}.txt', 'a') as f:
+                f.write(f"{end_time_pulp - start_time_pulp}")
+
+        with open(f'{dir_path}/fold{i}/fold{i}_tree_fit_time_{dataset_name}.txt', 'a') as f:
             f.write(str(tree.fit_time))
 
         with open(f'{dir_path}/fold{i}/{dataset_name}_result_test.csv', 'w') as f:
