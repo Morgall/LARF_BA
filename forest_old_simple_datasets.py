@@ -63,7 +63,7 @@ if __name__ == "__main__":
     
     for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
-        dir_path = f'results/less_random_forest_{dataset_name}/n_est{number_of_estimators}_depth{depth_rolling_tree}'
+        dir_path = f'results/less_random_forest_{dataset_name}/n_est{number_of_estimators}_depth{depth_rolling_tree}_2'
 
         features = data.drop(columns=['y'])
         targets = data['y']
@@ -99,7 +99,7 @@ if __name__ == "__main__":
                 tree_kwargs = dict(depth=8, criterion='gini', target_label='y', features=list(feature_columns))
 
                 start_time_forest = time.time()
-                forest = CustomEnsembleClassifier(n_estimators=number_of_estimators, tree_kwargs=tree_kwargs, random_state=42, cores_to_use=cores_to_use)
+                forest = CustomEnsembleClassifier(n_estimators=number_of_estimators, tree_kwargs=tree_kwargs, random_state=None, cores_to_use=cores_to_use)
                 
                 forest.parallel_fit(features_train, targets_train)
                 y_pred = forest.predict(features_test)

@@ -77,7 +77,7 @@ to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
-    dir_path = f'results/scikit_learn_forest/{dataset_name}/n_est{n_estimators}_depth{depth_tree}'
+    dir_path = f'results/scikit_learn_forest/{dataset_name}/n_est{n_estimators}_depth{depth_tree}_2'
 
     features = data.drop(columns=['y'])
     targets = data['y']
@@ -105,7 +105,7 @@ for dataset_name, data in to_do_dict.items(): #.items() gives key, values
             targets_test = targets.iloc[test_idx]
 
             start_time = time.time()
-            forest = RandomForestClassifier(n_estimators=n_estimators, max_depth=depth_tree,random_state = 42, max_features = 'sqrt', bootstrap=True)
+            forest = RandomForestClassifier(n_estimators=n_estimators, max_depth=depth_tree,random_state = None, max_features = 'sqrt', bootstrap=True)
             forest.fit(features_train, targets_train)
             
             r_test = forest.predict(features_test)

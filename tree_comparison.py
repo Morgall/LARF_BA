@@ -5,6 +5,8 @@ import time
 import os
 from sklearn.model_selection import StratifiedKFold
 
+# this was done to test the old refactored tree with bugs against the original
+
 if __name__ == "__main__":
 
     target_label = "y"
