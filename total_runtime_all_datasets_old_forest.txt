@@ -1,1 +1,1 @@
-Total runtime: 18819.87040758133 seconds
+Total runtime: 14369.27115368843 seconds
