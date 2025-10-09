@@ -24,7 +24,7 @@ depth_tree = 8
 criterion_loss = "gini"
 n_estimators = 50
 
-folds_cross_val = 10
+folds_cross_val = 5
 
 to_do_dict = dict() # add datasets to be run into this dict and choose key as dataset name
 
