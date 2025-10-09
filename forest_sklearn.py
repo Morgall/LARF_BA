@@ -77,7 +77,7 @@ to_do_dict['microbiome_taxa_easy'] = data_microbiome_taxa_easy
 
 for dataset_name, data in to_do_dict.items(): #.items() gives key, values
 
-    dir_path = f'results/scikit_learn_forest/{dataset_name}/n_est{n_estimators}_depth{depth_tree}_2'
+    dir_path = f'results/scikit_learn_forest/{dataset_name}/n_est{n_estimators}_depth{depth_tree}_3'
 
     features = data.drop(columns=['y'])
     targets = data['y']
