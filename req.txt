@@ -1,5 +1,0 @@
-numpy
-pandas
-pulp
-scikit-learn
-matplotlib.pyplot
