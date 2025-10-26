@@ -2,7 +2,7 @@
 
 This repository contains an implementation of a lookahead decision tree which is a modification
 of the lookahead decision tree by Organ et al.. Their approach can be found 
-at [text](https://github.com/koftezz/rolling-lookahead-DT) which is an implementation 
+at [their repository](https://github.com/koftezz/rolling-lookahead-DT) which is an implementation 
 of their lookahead decision tree approach
 ["Rolling Lookahead Learning for Optimal Classification Trees"](https://doi.org/10.48550/arXiv.2304.10830).
 This 
