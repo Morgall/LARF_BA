@@ -22,7 +22,7 @@ methods for colorectal cancer risk (CRC) stratification, specifically
 the metagenomic species abundance pseudo-counts provided by [Barbet et al. ](https://doi.org/10.57745/7IVO3E).
 
 
-##Installation
+## Installation
 `requirements.txt` specifies all packages, their version and dependencies.
 
 ```bash
