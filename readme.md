@@ -30,7 +30,7 @@ Consult `./makeReady_dasets.ipynb` to get an idea how data can be preprocessed
 and binarized.
 
 To understand how to use the lookahead classification tree and the lookahead random
-forest consult `./refactored_tree_server_simple_data.py` and `forest_refactored_simple_data.py`
+forest consult `./refactored_tree_server_simple_data.py` and `./forest_refactored_simple_data.py`
 respectively.
 
 
