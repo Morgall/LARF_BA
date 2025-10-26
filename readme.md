@@ -7,7 +7,8 @@ of their lookahead decision tree approach
 ["Rolling Lookahead Learning for Optimal Classification Trees"](https://doi.org/10.48550/arXiv.2304.10830).
 This 
 repository also contains an implementation of a lookahead random forest, which uses
-the lookahead decision trees in an ensemble.
+the lookahead decision trees in an ensemble. It provides bootstrapping, random feature subset
+selection as well as multithreading.
 The classifiers are designed specifically for binary data but can work for both
 binary & multi-class classification tasks. Tools for binarization are provided.
 
@@ -20,6 +21,17 @@ UC Irvine Machine Learning Repository ([UCI Machine Learning Repository](https:/
 as well as microbiome datasets to evaluate various machine learning classification
 methods for colorectal cancer risk (CRC) stratification, specifically 
 the metagenomic species abundance pseudo-counts provided by [Barbet et al. ](https://doi.org/10.57745/7IVO3E).
+Furthermore, it still contains lots of auxiliary testing data and prototypes.
+
+The modified lookahead decision tree class can be found in `tree_refactored/class_tree.py`
+and the lookahead random forest class can be found in `forest/forest_refactored_tree/class_forest_refactored.py`.
+
+Consult `./makeReady_dasets.ipynb` to get an idea how data can be preprocessed 
+and binarized.
+
+To understand how to use the lookahead classification tree and the lookahead random
+forest consult `./refactored_tree_server_simple_data.py` and `forest_refactored_simple_data.py`
+respectively.
 
 
 ## Installation
